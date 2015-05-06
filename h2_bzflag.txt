@@ -1,0 +1,111 @@
+BZFlag Tutorial Homework
+
+Some of the labs in CS 470 involve writing agents to control robot tanks in the open-source tank battle game, BZFlag. At least, they used to. Because actually using BZFlag was a maintenance nightmare, we wrote a simple clone of BZFlag, called BZRFlag (BZFlag with robots), that you will actually interact with. This assignment will help you become acquainted with the environment used for the labs. Along with this assignment, you will also be expected to report on who your partner will be or whether you will be working alone (working with a partner is strongly encouraged).
+
+
+Assignment Overview
+
+1. Play a game of capture the flag in BZFlag.
+2. Manually control a robot tank.
+3. Choose a lab partner and programming environment.
+ 
+
+Part 1: Play a game of capture the flag
+
+[5 points] The first part of the assignment is to play a game of capture the flag to become acquainted with BZFlag. Even though you will not be using the real BZFlag for the labs, we want you to be familiar with the basic idea of the game. Play with other members of your class.
+
+Start a bzfs server as follows (on a Linux machine in the labs):
+
+bzfs -c -d -set _tankAngVel 0.5 -set _rejoinTime 0 
+
+Start a client by running:
+
+bzflag
+
+If you would like to run it in a window so that you can use other windows as well, then give bzflag the "-window 1024x768" argument and set "Confine mouse" to "No" in "Options:Input Settings."
+
+A few hints:
+
+Under "Join Game," you can either find an online server to connect to, and play with people over the internet, or you can start your own game, if there are a few of you trying this out together. (Generally the first command, with bzfs, is only necessary if you are going to start your own game. Then you connect to localhost.)
+Once you are playing, press ESC to get to the menu, and in that menu, see the "Help" section to know how to control the tank.
+
+Remember, this is just to get an idea of the game that you'll be building an artificial intelligence for. Don't spend too much time on this.
+
+
+Part 2: Manually control a tank
+
+[10 points] Now that you are familiar with BZFlag, you will get familiar with the simple clone that we created, BZRFlag.
+
+Install BZRFlag
+
+Clone the git repository so that you have a copy for yourself that you can modify as you wish (like to make your own scripts in the same directory as bzrflag, or keep your agent code along side the bzrflag code). You should periodically pull from the repository to be sure you have the most up-to-date code. The packages you will need are pygame and pyparsing. On Ubuntu, you can run "sudo apt-get install python-pygame python-pyparsing". On Fedora, the command is "sudo yum install pygame pyparsing".
+
+If you get it to run on Windows (it should be able to with those packages), let us know so other people can benefit from your experience. A friendly classmate has created the page BZRFlag on Windows. Feel free to update it.
+
+To clone the git repository, run:
+
+git clone git://aml.cs.byu.edu/bzrflag.git
+
+and
+
+git pull
+
+to update your clone of the repository.
+
+The rest of this description assumes that you are in the bzrflag directory.
+
+Back to the tutorial
+
+The server is run with the command:
+
+./bin/bzrflag
+
+To get a list of the command line options you can use, run:
+
+./bin/bzrflag -h
+
+There are a few scripts in the directory that start everything with appropriate flags. Feel free to modify those or create your own as you need (assuming you copied the directory). If you are on a laptop with low resolution, the option to change the size of the window when it comes up is --window-size=[size]x[size]. There's a bug where if it tries to make the window too big, you can't scroll correctly, so if you run into that just make the window smaller.
+
+Run simple.sh (./simple.sh). This brings up BZRFlag, with four teams in a simple world. It also prints out what port each team is listening on. In order to control the tanks, you need to talk to that port. The protocol that BZRFlag uses is the BZRC Protocol. You will need to use this protocol, so become familiar with how it works. For this homework, you may want to just skim it and get the general idea. For the labs, you will need to understand it well.
+
+Now, we will give a simple tutorial on how to control the tanks, to get some practice with the BZRC protocol. Open another terminal and run:
+
+telnet localhost [port] (pick a color and use one of the ports printed out by bzrflag)
+
+You are now connected to the bots. The bots should introduce themselves by saying:
+
+bzrobots 1
+
+Complete the introductions by typing:
+
+agent 1
+
+The bots now recognize you and are happy to follow your bidding. Just for fun, send the following instruction to the first bot, whose id is 0:
+
+shoot 0
+
+You should see a shot fired from one of the bots. While the first bot's cannon is being loaded, tell the second bot, whose id is 1, to shoot:
+
+shoot 1
+
+You can also move the bots around. You can set a desired speed, where 1.0 is the maximum forward speed, and -1.0 is maximum reverse speed. Similarly, you can set a desired angular velocity, where 1.0 is maximum counter-clockwise and -1.0 is maximum clockwise. Just specify the command, bot, and value, like so:
+
+speed 0 1.0
+angvel 0 0.5
+speed 1 -0.7
+speed 0 0.0
+angvel 0 0.0
+speed 1 0.0
+
+This will set the speed of bot 0 to maximum forward speed, and then tell it to rotate counter-clockwise at half of the maximum possible angular velocity. Then the second bot is told to go in reverse at 70% of the maximum possible speed. Finally, the two tanks are stopped.
+
+With your partner, continue experimenting with controlling the tanks. Get to the point that you can explode a stationary tank by typing commands to your tank.
+
+
+What to turn in
+
+Turn in a summary of the expereince with the following information:
+
+1. List the names of the people you played capture the flag with.
+2. Show your partner that you can shoot a stationary tank by typing commands, and print the commands you used, by cutting them from your terminal and pasting them into your summary.
+3. Write who your lab partner will be, what language you will be programming in, and what platform (Linux, Windows, etc.) you will be using.

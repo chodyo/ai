@@ -1,0 +1,32 @@
+Local Search Homework
+
+Part 1
+1.    Suppose f(x) = − 3(x − 2)^2. At what value of x does f(x) take its maximum value?
+
+2.    Suppose that we use gradient ascent (from page 131 and 132 of the book) to find the maximum of the function from problem 1. Let α = 0.1 and suppose that our first guess of the maximum is x = 0. What is our guess after one iteration of applying the equation at the top of page 132? What is our guess after two iterations of applying the algorithm?
+
+3.    Compute the gradient of f(x,y) = 3x^2y^3 − x^2 + 5y^2 by computing the partial derivatives \(\frac{\partial f}{\partial x}\) and \(\frac{\partial f}{\partial y}\). (See this link {http://en.wikipedia.org/wiki/Partial_derivative} for hints.)
+
+4.    Suppose that we use gradient ascent (from page 131 and 132 of the book) to find the maximum of f(x,y) = − (x − 3)^2 − 5y^2 + 2xy. Let α = 0.05 and suppose that our first guess of the maximum is x = 0,y = 1. What is our guess after one iteration of applying the equation at the top of page 132? What is our guess after two iterations of applying the algorithm?
+
+Part 2
+
+The attached Local Search MATLAB code {https://facwiki.cs.byu.edu/cs470fall2011/index.php/Local_Search_MATLAB_code} has you play with various local search algorithms: hill-climbing, random restart hill-climbing, and beam-forming. The code is organized as follows:
+
+§  hill climbing on a surface with one bump
+
+§  hill climbing on a surface with more than one bump
+
+§  random restart hill climbing on a surface with more than one bump
+
+§  local beam search on a surface with more than one bump
+
+Run the code so that you learn how hill-climbing, random restart hill-climbing, and local beam search differ. Then, answer the following questions:
+
+1.    What is the probability that hill climbing will reach the maximum point on a surface with more than one bump? How does this probability depend on the footprint of the hill?
+
+2.    When would you perform random restart hill-climbing rather than hill-climbing? How would you know which to run?
+
+3.    What would happen if you changed the beam search algorithm so that it took the 10 best solutions instead of the 7 best? Why?
+
+Don't include all of the plots generated from the MATLAB code, but if a print-out helps you answer the above questions then include the print-out with your homework.
