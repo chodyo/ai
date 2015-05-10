@@ -1,0 +1,12 @@
+start server:
+  ./bin/bzrflag
+
+cmd line options:
+  ./bin/bzrflag -h
+
+start client:
+  telnet localhost [port]
+
+complete introductions:
+  agent 1
+

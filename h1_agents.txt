@@ -2,8 +2,6 @@
 For each of the following activities, give a PEAS description of the task environment and characterize it in terms of the properties listed in Section 2.3.2. Give a few sentences for each part of the peas model. A little more for the parts you find interesting; but maybe only one or two sentences for items you think are really obvious.
 
 Performance		Environment 	Action 		Sensory
-Actions 	States 		Goals 		Consequences 	Preferences (U)
-
 
 Playing soccer:
 	P 	Performance would be based on an agent progressing his team toward winning the game. If an agent contributed significantly toward his team doing well through actions including but not limited to scoring, assisting, or defending, that agent would receive a high performance score. 
@@ -11,6 +9,18 @@ Playing soccer:
 	A 	Kick the ball, reposition on field, communicate with other agents.
 	S 	Sensory inputs to an agent would be similar to a human but without some of the unecessary items. Some necessary items would be vision of the field, hearing/communication, and balance.
 
+Bidding on an item at an auction:
+	P 	Performance may be evaluated based on the ratio of the number of items the agent won out of the number of items the agent wanted to win.
+	E 	Online/silent auction/traditional auction arena
+	A 	Bid
+	S 	Vision/auditory
+
+
+2. [10 points] Repeat the problem given above but instead of doing a PEAS description do a Decision Theory description (see "Frameworks for Decision Making" in "Content" or Another view of agents).
+
+Actions 	States 		Goals 		Consequences 	Preferences (U)
+
+Playing soccer:
 	A 	Actions should include everything in a soccer player's toolkit. For example, the agent should be able to dribble, pass, shoot, juke, throw-in, corner kick, and fake an injury.
 	S 	States will enumerate the states available to the agent. Assuming each agent is able to control one player on the field at a time, states will include: has/does not have the ball, is a striker/midfielder/defender/goalie, team has or does not have the ball, team is losing/winning/close (this could allow an agent to play more or less risky/frenzied), is open or not, is being defended/pursued or not. There is plenty of room for more states, but these should cover the actions I listed.
 	G 	Overall goal: score more points than the other team. Temporary goals could include scoring a point, making successful passes, defending against offensive plays, and blocking shots.
@@ -19,18 +29,8 @@ Playing soccer:
 
 
 Bidding on an item at an auction:
-	P 	Performance may be evaluated based on the ratio of the number of items the agent won out of the number of items the agent wanted to win.
-	E 	Online/silent auction/traditional auction arena
-	A 	Bid
-	S 	Vision/auditory
-
 	A 	Bid, heckle (gotta play mind games)
 	S 	Want/don't want an item, winning/losing a desired item, winning/losing a non-desired item, have/don't have enough money to bid.
 	G 	Win all desired items, drive up price of non-desired items without winning so that opponents have less money for items you want.
 	C 	Win/lose an item, decrement money.
 	U 	Win desired item: +100, lose desired item: 0, win non-desired item: -100, lose non-desired item: +20, lose non-desired item after bidding on it: +75
-
-	
-
-
-2. [10 points] Repeat the problem given above but instead of doing a PEAS description do a Decision Theory description (see "Frameworks for Decision Making" in "Content" or Another view of agents).

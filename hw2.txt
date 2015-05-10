@@ -1,0 +1,37 @@
+1. List the names of the people you played capture the flag with.
+	Bill McGreaham
+
+2. Show your partner that you can shoot a stationary tank by typing commands, and print the commands you used, by cutting them from your terminal and pasting them into your summary.
+
+	speed 0 1
+	ack 132.226701021 speed 0 1.0
+	ok
+	angvel 0 1
+	ack 142.703603029 angvel 0 1.0
+	ok
+	angvel 0 0
+	ack 152.267235994 angvel 0 0.0
+	ok
+	angvel 0 2
+	ack 161.73237896 angvel 0 2.0
+	ok
+	angvel 0 0
+	ack 176.579387903 angvel 0 0.0
+	ok
+	speed 0 0
+	ack 182.049861908 speed 0 0.0
+	ok
+	shoot 0  
+	ack 186.251720905 shoot 0
+	ok
+	shoot 0
+	ack 189.38231492 shoot 0
+	fail
+	shoot 0
+	ack 192.10750699 shoot 0
+	ok
+
+3. Write who your lab partner will be, what language you will be programming in, and what platform (Linux, Windows, etc.) you will be using.
+	Bill McGreaham
+	Python
+	Linux
