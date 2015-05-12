@@ -33,10 +33,16 @@ class Agent(object):
         self.constants = self.bzrc.get_constants()
         self.commands = []
 
-        obstacles = bzrc.get_obstacles()
+        mytanks = bzrc.get_mytanks()
+        self.mycolor = mytanks[0].callsign[:-1]
         bases = bzrc.get_bases()
-        flags = bzrc.get_flags()
-        self.pf = PotentialField(obstacles, bases, flags)
+        self.mybase = None
+        for base in bases:
+            if base.color == self.mycolor:
+                self.mybase = base
+
+        obstacles = bzrc.get_obstacles()
+        self.pf = PotentialField(obstacles)
 
     def tick(self, time_diff):
         '''Some time has passed; decide what to do next'''
@@ -71,7 +77,19 @@ class Agent(object):
 
     def get_flag(self, bot):
         '''Find the closest flag and move to its location'''
-        pass
+        closest_flag = None
+        closest_dist = 2 * float(self.constants['worldsize'])
+        for flag in self.flags:
+            dist = math.sqrt((flag.x - bot.x)**2 + (flag.y - bot.y)**2)
+            if dist < closest_dist:
+                closest_dist = dist
+                closest_flag = flag
+        if closest_flag is None:
+            command = Command(bot.index, 0, 0, False)
+            self.commands.append(command)
+        else:
+            pf.set_goal([closest_flag.x, closest_flag.y])
+            desired_angle, desired_speed = pf.get_vector([bot.x, bot.y])
 
     def return_to_base(self, bot):
         '''Move to my base's location'''
