@@ -13,7 +13,6 @@ class PotentialField(object):
 
 		self.get_flag = True
 
-
 	# only one goal, it will be the only attractive field
 	def set_goal(self, goal):
 		self.goal = goal
@@ -40,6 +39,7 @@ class PotentialField(object):
 			ret_x += x
 			ret_y += y
 
+		print ret_x, ret_y
 		return ret_x, ret_y
 
 	# obj is a variable that must hold the x and y coordinates of a goal, 
@@ -69,12 +69,11 @@ class PotentialField(object):
 	# an obstacle.
 	def get_repulsive(self, obj, coords, strength):
 		'''Returns <x,y> of the sum of fields at coords'''
-		print "obj = ", obj.x
 		o = Misc()
-		o.x = (obj[0][0]+obj[1][0]+obj[2][0]+obj[3][0])/4
-		o.y = (obj[0][1]+obj[1][1]+obj[2][1]+obj[3][1])/4
+		o.x = (obj.corner1_x+obj.corner2_x+obj.corner3_x+obj.corner4_x)/4
+		o.y = (obj.corner1_y+obj.corner2_y+obj.corner3_y+obj.corner4_y)/4
 
-		r = math.fabs(o.x-obj[0][0])
+		r = math.fabs(o.x-obj.corner1_x)
 		s = float(self.worldsize) / 4				# this value needs to be adjusted based on experimentation
 
 		d = math.sqrt((o.x-coords.x)**2+(o.y-coords.y)**2)
@@ -125,6 +124,14 @@ class PotentialField(object):
 			return -1
 		elif value >= 0:
 			return 1
+
+class Answer(object):
+    '''BZRC returns an Answer for things like tanks, obstacles, etc.
+
+    You should probably write your own code for this sort of stuff.  We
+    created this class just to keep things short and sweet.'''
+
+    pass
 
 class Misc(object):
     pass
