@@ -2,6 +2,7 @@
 
 from bzrc import BZRC, Command
 import sys, math, time
+from potentialField import PotentialField
 
 # An incredibly simple agent.  All we do is find the closest enemy tank, drive
 # towards it, and shoot.  Note that if friendly fire is allowed, you will very
@@ -42,7 +43,8 @@ class Agent(object):
                 self.mybase = base
 
         obstacles = bzrc.get_obstacles()
-        self.pf = PotentialField(obstacles)
+        worldsize = self.constants['worldsize']
+        self.pf = PotentialField(obstacles, worldsize)
 
     def tick(self, time_diff):
         '''Some time has passed; decide what to do next'''
@@ -54,9 +56,6 @@ class Agent(object):
         self.shots = shots
         self.enemies = [tank for tank in othertanks if tank.color !=
                 self.constants['team']]
-
-        # Update the potential field
-        self.pf.set_flags(self.flags)
 
         # Reset my set of commands (we don't want to run old commands)
         self.commands = []
@@ -77,7 +76,7 @@ class Agent(object):
 
     def get_flag(self, bot):
         '''Find the closest flag and move to its location'''
-        pf.get_flag = True
+        self.pf.get_flag = True
 
         closest_flag = None
         closest_dist = 2 * float(self.constants['worldsize'])
@@ -90,8 +89,13 @@ class Agent(object):
             command = Command(bot.index, 0, 0, False)
             self.commands.append(command)
         else:
-            pf.set_goal([closest_flag.x, closest_flag.y])
-            desired_x, desired_y = pf.get_vector([bot.x, bot.y])
+            goal = Answer()
+            goal.x = closest_flag.x
+            goal.y = closest_flag.y
+            goal.r = 0
+
+            self.pf.set_goal(goal)
+            desired_x, desired_y = self.pf.get_vector(bot)
             self.move_from_vector(bot, desired_x, desired_y)
 
     def return_to_base(self, bot):
@@ -137,6 +141,14 @@ class Agent(object):
         elif angle > math.pi:
             angle -= 2 * math.pi
         return angle
+
+class Answer(object):
+    '''BZRC returns an Answer for things like tanks, obstacles, etc.
+
+    You should probably write your own code for this sort of stuff.  We
+    created this class just to keep things short and sweet.'''
+
+    pass
 
 
 def main():
