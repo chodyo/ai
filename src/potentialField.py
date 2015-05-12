@@ -6,6 +6,8 @@ class PotentialField(object):
 		self.obstacles = obstacles
 		self.worldsize = worldsize
 		self.mybase = mybase
+		self.home_x = (mybase.corner1_x+mybase.corner2_x+mybase.corner3_x+mybase.corner4_x)/4
+		self.home_y = (mybase.corner1_y+mybase.corner2_y+mybase.corner3_y+mybase.corner4_y)/4
 
 		self.attractive_strength = 1
 		self.repulsive_strength = 1
@@ -39,7 +41,7 @@ class PotentialField(object):
 			ret_x += x
 			ret_y += y
 
-		print ret_x, ret_y
+		# print ret_x, ret_y
 		return ret_x, ret_y
 
 	# obj is a variable that must hold the x and y coordinates of a goal, 
@@ -48,7 +50,7 @@ class PotentialField(object):
 		'''Returns <x,y> of the sum of fields at coords'''
 		g = obj
 		r = float(g.r)
-		s = float(self.worldsize)				# this value needs to be adjusted based on experimentation
+		s = 0 # float(self.worldsize)/16				# this value needs to be adjusted based on experimentation
 
 		d = math.sqrt((g.x-coords.x)**2+(g.y-coords.y)**2)
 		theta = math.atan2((g.y-coords.y),(g.x-coords.x))
@@ -98,11 +100,11 @@ class PotentialField(object):
 		o.y = (obj[0][1]+obj[1][1]+obj[2][1]+obj[3][1])/4
 
 		r = math.fabs(o.x-obj[0][0])
-		s = float(self.worldsize) / 4				# this value needs to be adjusted based on experimentation
+		s = r*1.5				# this value needs to be adjusted based on experimentation
 
 		d = math.sqrt((o.x-coords.x)**2+(o.y-coords.y)**2)
 		theta = math.atan2((o.y-coords.y),(o.x-coords.x))
-		# THIS IS THE ONLY DIFFERENCE BETWEEN TANGENTIAL AND REPULSIVE
+		# THIS IS THE ONLY REAL DIFFERENCE BETWEEN TANGENTIAL AND REPULSIVE
 		theta += math.pi / 2
 
 		x = 0
@@ -124,14 +126,6 @@ class PotentialField(object):
 			return -1
 		elif value >= 0:
 			return 1
-
-class Answer(object):
-    '''BZRC returns an Answer for things like tanks, obstacles, etc.
-
-    You should probably write your own code for this sort of stuff.  We
-    created this class just to keep things short and sweet.'''
-
-    pass
 
 class Misc(object):
     pass
