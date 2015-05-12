@@ -2,21 +2,16 @@ import math
 
 class PotentialField(object):
 
-	def __init__(self, obstacles, worldsize):
+	def __init__(self, obstacles, worldsize, mybase):
 		self.obstacles = obstacles
 		self.worldsize = worldsize
+		self.mybase = mybase
 
 		self.attractive_strength = 1
 		self.repulsive_strength = 1
 		self.tangential_strength = 1
 
 		self.get_flag = True
-
-	def set_obstacles(self, obstacles):
-		self.obstacles = obstacles
-
-	def set_mybase(self, mybase):
-		self.mybase = mybase
 
 
 	# only one goal, it will be the only attractive field
@@ -74,12 +69,13 @@ class PotentialField(object):
 	# an obstacle.
 	def get_repulsive(self, obj, coords, strength):
 		'''Returns <x,y> of the sum of fields at coords'''
-		print obj
-		o.x = (obj.corner1_x+obj.corner2_x+obj.corner3_x+obj_corner4_x)/4
-		o.y = (obj.corner1_y+obj.corner2_y+obj.corner3_y+obj_corner4_y)/4
+		print "obj = ", obj.x
+		o = Misc()
+		o.x = (obj[0][0]+obj[1][0]+obj[2][0]+obj[3][0])/4
+		o.y = (obj[0][1]+obj[1][1]+obj[2][1]+obj[3][1])/4
 
-		r = math.fabs(o.x-obj.corner1_x)
-		s = self.worldsize / 4				# this value needs to be adjusted based on experimentation
+		r = math.fabs(o.x-obj[0][0])
+		s = float(self.worldsize) / 4				# this value needs to be adjusted based on experimentation
 
 		d = math.sqrt((o.x-coords.x)**2+(o.y-coords.y)**2)
 		theta = math.atan2((o.y-coords.y),(o.x-coords.x))
@@ -98,11 +94,12 @@ class PotentialField(object):
 
 	def get_tangential(self, obj, coords, strength):
 		'''Returns <x,y> of the sum of fields at coords'''
-		o.x = (obj.corner1_x+obj.corner2_x+obj.corner3_x+obj_corner4_x)/4
-		o.y = (obj.corner1_y+obj.corner2_y+obj.corner3_y+obj_corner4_y)/4
+		o = Misc()
+		o.x = (obj[0][0]+obj[1][0]+obj[2][0]+obj[3][0])/4
+		o.y = (obj[0][1]+obj[1][1]+obj[2][1]+obj[3][1])/4
 
-		r = math.fabs(o.x-obj.corner1_x)
-		s = self.worldsize / 4				# this value needs to be adjusted based on experimentation
+		r = math.fabs(o.x-obj[0][0])
+		s = float(self.worldsize) / 4				# this value needs to be adjusted based on experimentation
 
 		d = math.sqrt((o.x-coords.x)**2+(o.y-coords.y)**2)
 		theta = math.atan2((o.y-coords.y),(o.x-coords.x))
@@ -128,3 +125,6 @@ class PotentialField(object):
 			return -1
 		elif value >= 0:
 			return 1
+
+class Misc(object):
+    pass

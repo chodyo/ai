@@ -34,17 +34,18 @@ class Agent(object):
         self.constants = self.bzrc.get_constants()
         self.commands = []
 
+        obstacles = bzrc.get_obstacles()
+        worldsize = self.constants['worldsize']
+
         mytanks = bzrc.get_mytanks()
         self.mycolor = mytanks[0].callsign[:-1]
         bases = bzrc.get_bases()
-        self.mybase = None
+        mybase = None
         for base in bases:
             if base.color == self.mycolor:
-                self.mybase = base
-
-        obstacles = bzrc.get_obstacles()
-        worldsize = self.constants['worldsize']
-        self.pf = PotentialField(obstacles, worldsize)
+                mybase = base
+                
+        self.pf = PotentialField(obstacles, worldsize, mybase)
 
     def tick(self, time_diff):
         '''Some time has passed; decide what to do next'''
@@ -89,7 +90,7 @@ class Agent(object):
             command = Command(bot.index, 0, 0, False)
             self.commands.append(command)
         else:
-            goal = Answer()
+            goal = Misc()
             goal.x = closest_flag.x
             goal.y = closest_flag.y
             goal.r = 0
@@ -142,12 +143,7 @@ class Agent(object):
             angle -= 2 * math.pi
         return angle
 
-class Answer(object):
-    '''BZRC returns an Answer for things like tanks, obstacles, etc.
-
-    You should probably write your own code for this sort of stuff.  We
-    created this class just to keep things short and sweet.'''
-
+class Misc(object):
     pass
 
 
