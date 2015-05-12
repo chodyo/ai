@@ -32,11 +32,11 @@ class Agent(object):
         self.bzrc = bzrc
         self.constants = self.bzrc.get_constants()
         self.commands = []
-        self.SetPotentialField()
 
-    def SetPotentialField(self):
-        # TODO
-        pass
+        obstacles = bzrc.get_obstacles()
+        bases = bzrc.get_bases()
+        flags = bzrc.get_flags()
+        self.pf = PotentialField(obstacles, bases, flags)
 
     def tick(self, time_diff):
         '''Some time has passed; decide what to do next'''
@@ -49,15 +49,33 @@ class Agent(object):
         self.enemies = [tank for tank in othertanks if tank.color !=
                 self.constants['team']]
 
+        # Update the potential field
+        self.pf.set_flags(self.flags)
+
         # Reset my set of commands (we don't want to run old commands)
         self.commands = []
 
         # Decide what to do with each of my tanks
-        for bot in mytanks:
-            self.attack_enemies(bot)
+        # for bot in mytanks:
+        #     self.attack_enemies(bot)
+
+        # Chase the flag
+        bot = mytanks[0]
+        if bot.flag == True:
+            self.return_to_base(bot)
+        else:
+            self.get_flag(bot)
 
         # Send the commands to the server
         results = self.bzrc.do_commands(self.commands)
+
+    def get_flag(self, bot):
+        '''Find the closest flag and move to its location'''
+        pass
+
+    def return_to_base(self, bot):
+        '''Move to my base's location'''
+        pass
 
     def attack_enemies(self, bot):
         '''Find the closest enemy and chase it, shooting as you go'''
