@@ -65,7 +65,7 @@ class Agent(object):
         # for bot in mytanks:
         #     self.attack_enemies(bot)
 
-        # Chase the flag
+        # Chase/capture the flag
         bot = mytanks[0]
         if bot.flag == True:
             self.return_to_base(bot)
@@ -77,6 +77,8 @@ class Agent(object):
 
     def get_flag(self, bot):
         '''Find the closest flag and move to its location'''
+        pf.get_flag = True
+
         closest_flag = None
         closest_dist = 2 * float(self.constants['worldsize'])
         for flag in self.flags:
@@ -89,7 +91,8 @@ class Agent(object):
             self.commands.append(command)
         else:
             pf.set_goal([closest_flag.x, closest_flag.y])
-            desired_angle, desired_speed = pf.get_vector([bot.x, bot.y])
+            desired_x, desired_y = pf.get_vector([bot.x, bot.y])
+            self.move_from_vector(bot, desired_x, desired_y)
 
     def return_to_base(self, bot):
         '''Move to my base's location'''
@@ -111,6 +114,13 @@ class Agent(object):
             self.commands.append(command)
         else:
             self.move_to_position(bot, best_enemy.x, best_enemy.y)
+
+    def move_from_vector(self, bot, vx, vy):
+        target_angle = math.atan2(vy, vx)
+        relative_angle = self.normalize_angle(target_angle - bot.angle)
+        omega = relative_angle / math.pi
+        command = Command(bot.index, 1, omega, True)
+        self.commands.append(command)
 
     def move_to_position(self, bot, target_x, target_y):
         target_angle = math.atan2(target_y - bot.y,

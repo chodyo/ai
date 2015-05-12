@@ -330,7 +330,7 @@ class BZRC:
         return self.read_bool()
 
     def accely(self, index, value):
-        '''Set the desired x acceleration to the specified value.'''
+        '''Set the desired y acceleration to the specified value.'''
 
         self.sendline('accely %s %s' % (index, value))
         self.read_ack()
