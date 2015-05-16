@@ -27,7 +27,7 @@ from potentialField import PotentialField
 # time to wait between ticks in milliseconds
 sleepTime = 20
 # number of bots to control
-botCount = 10
+botCount = 1
 # should the bots fire uncontrollably?
 shootOnCooldown = True
 

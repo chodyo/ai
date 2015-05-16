@@ -9,7 +9,7 @@ class PotentialField(object):
 		self.home_x = (mybase.corner1_x+mybase.corner2_x+mybase.corner3_x+mybase.corner4_x)/4
 		self.home_y = (mybase.corner1_y+mybase.corner2_y+mybase.corner3_y+mybase.corner4_y)/4
 
-		self.attractive_strength = 1
+		self.attractive_strength = 2
 		self.repulsive_strength = 1
 		self.tangential_strength = 1
 
