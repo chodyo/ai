@@ -1,0 +1,7 @@
+Genetic Algorithm - HW4
+
+1. When PATH_LEN varies, it changes the total length of the path. It's pretty straight-forward. When PATH_LEN is high (like 3*WORLD_DIM), there are often a lot of intersections and places where it snakes back on top of itself.
+
+2. When NUM_GENES varies, it changes the type of genes that the path consists of. In terms of path finding, it restricts certain paths, so when NUM_GENES is lower, the path length increases because some shorter paths are invalid.
+
+3. When MAX_GENERATIONS increases, the algorithm takes longer to complete, but often finds better results (shorter paths).

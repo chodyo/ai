@@ -28,12 +28,11 @@ class GridFilter(object):
 		for x in range(0, len(new_grid)):
 			for y in range(0, len(new_grid[x])):
 				# print x+pos[0], y+pos[1], new_grid[x][y]
-				new_prob = self.probability(x+pos[0], y+pos[1], new_grid[x][y])
-				self.grid[x][y] = new_prob
+				priori = self.grid[x+pos[0]][y+pos[1]]
+				self.grid[x][y] = self.probability(priori, new_grid[x][y])
 
 	# update the probability at a specific location
-	def probability(self, x, y, occupied):
-		priori = self.grid[x][y]
+	def probability(self, priori, occupied):
 		if priori == -1:
 			priori = 0.5
 		inv_priori = 1 - priori
@@ -60,7 +59,9 @@ if __name__ == '__main__':
 
 	gf = GridFilter(test_true_pos, test_true_neg, test_worldsize)
 	gf.grid[0][0] = 0.72
+	gf.grid[0][1] = 0.45
 	gf.grid[1][0] = 0.63
+	# gf.grid[1][1] = 0.90
 	print gf.grid
 
 	# new_grid = [[1, 1, 0],[1, 1, 0],[0, 0, 0]]
