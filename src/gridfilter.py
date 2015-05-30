@@ -1,5 +1,6 @@
 import numpy
 import math
+import drawgridfilter
 
 # The main piece of this class is the self.grid item.
 # quick reference:
@@ -34,6 +35,23 @@ class GridFilter(object):
 				# print x+pos[0], y+pos[1], new_grid[x][y]
 				priori = self.grid[x+start_x][y+start_y]
 				self.grid[x+start_x][y+start_y] = self.probability(priori, new_grid[x][y])
+
+	# prepare the grid for drawing
+	def get_grid(self):
+		outgrid = numpy.empty([self.worldsize, self.worldsize])
+		for x in range(0, self.worldsize):
+			for y in range(0, self.worldsize):
+				# unexplored
+				if self.grid[x][y] == -1:
+					outgrid[x][y] = 128
+				# not occupied
+				elif self.grid[x][y] < CONFIDENCE:
+					outgrid[x][y] = 0
+				# occupied
+				else:
+					outgrid[x][y] = 256
+		return outgrid
+
 
 	# update the probability at a specific location
 	def probability(self, priori, occupied):
@@ -71,19 +89,25 @@ class GridFilter(object):
 if __name__ == '__main__':
 	test_true_pos = 0.97
 	test_true_neg = 0.90
-	test_worldsize = 6
+	test_worldsize = 800
 
 	gf = GridFilter(test_true_pos, test_true_neg, test_worldsize)
 	gf.grid[4][4] = 0.72
 	gf.grid[4][5] = 0.45
 	gf.grid[5][4] = 0.63
 	# gf.grid[1][1] = 0.90
-	print gf.grid
+	# print gf.grid
 
 	# new_grid = [[1, 1, 0],[1, 1, 0],[0, 0, 0]]
 	new_grid = [[1, 1], [0, 0]]
 	new_pos = (4, 4)
 	gf.update_grid(new_pos, new_grid)
-	print gf.grid
+	# print gf.grid
 
-	print gf.closest_goal(5, 4)
+	# print gf.closest_goal(5, 4)
+
+	# this needs to be converted to the agent's code
+	drawgridfilter.init_window(gf.worldsize, gf.worldsize)
+	while 1:
+		drawgridfilter.update_grid(gf.get_grid())
+		drawgridfilter.draw_grid()
