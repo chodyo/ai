@@ -43,13 +43,13 @@ class GridFilter(object):
 			for y in range(0, self.worldsize):
 				# unexplored
 				if self.grid[x][y] == -1:
-					outgrid[x][y] = 128
+					outgrid[x][y] = 0.5
 				# not occupied
 				elif self.grid[x][y] < CONFIDENCE:
 					outgrid[x][y] = 0
 				# occupied
 				else:
-					outgrid[x][y] = 256
+					outgrid[x][y] = 1
 		return outgrid
 
 
