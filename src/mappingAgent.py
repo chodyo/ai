@@ -1,8 +1,12 @@
 #!/usr/bin/python -tt
 
 from bzrc import BZRC, Command
+from gridfilter import GridFilter
 import sys, math, time
-from potentialFieldUpdate import PotentialField
+#from potentialFieldUpdate import PotentialField
+from potentialFieldForDrawing import PotentialField
+import drawgridfilter 
+import numpy as np
 
 # An incredibly simple agent.  All we do is find the closest enemy tank, drive
 # towards it, and shoot.  Note that if friendly fire is allowed, you will very
@@ -25,11 +29,11 @@ from potentialFieldUpdate import PotentialField
 #################################################################
 
 # time to wait between ticks in milliseconds
-sleepTime = 2000
+sleepTime = 4000
 # number of bots to control
 botCount = 9
 # should the bots fire uncontrollably?
-shootOnCooldown = True
+shootOnCooldown = False
 
 class Agent(object):
 
@@ -37,19 +41,29 @@ class Agent(object):
         self.bzrc = bzrc
         self.constants = self.bzrc.get_constants()
         self.commands = []
-
+        self.gridFilter = GridFilter(self.constants['truepositive'],self.constants['truenegative']);
+        self.pfArrx = []
+        self.pfArry = []
+        self.distArr = []
         obstacles = bzrc.get_obstacles()
         worldsize = self.constants['worldsize']
 
-        mytanks = bzrc.get_mytanks()
-        self.mycolor = mytanks[0].callsign[:-1]
+        self.mytanks = bzrc.get_mytanks()
+        self.mycolor = self.mytanks[0].callsign[:-1]
         bases = bzrc.get_bases()
         mybase = None
         for base in bases:
             if base.color == self.mycolor:
                 mybase = base
-
+        self.myBase = mybase
         self.pf = PotentialField(obstacles, worldsize, mybase)
+
+        #set the goal and potential field for each tank
+        for bot in self.mytanks:
+            if bot.index >= botCount:
+                continue
+            elif bot.index<botCount:
+                self.map_area(bot)
 
     def tick(self, time_diff):
         '''Some time has passed; decide what to do next'''
@@ -58,151 +72,126 @@ class Agent(object):
         self.mytanks = mytanks
         self.othertanks = othertanks
         self.flags = flags
-        self.shots = shots
+        self.shots = 0
         self.enemies = [tank for tank in othertanks if tank.color !=
                 self.constants['team']]
 
         # Reset my set of commands (we don't want to run old commands)
         self.commands = []
 
-        # Decide what to do with each of my tanks
-        # for bot in mytanks:
-        #     self.attack_enemies(bot)
-
-        # Chase/capture the flag
-        
-        for bot in mytanks:
+       #for each bot, call makeMap on the bot
+        for bot in self.mytanks:
             if bot.index >= botCount:
                 continue
-            else:
-                self.map_area(bot)
+            elif bot.index<botCount:
+                self.makeMap(bot)
 
+
+        self.update_map()
+       
+        drawgridfilter.draw_grid()
 
         # Send the commands to the server
         results = self.bzrc.do_commands(self.commands)
 
+    def update_map(self):
+        for bot in self.mytanks:
+            if bot.index <=botCount:
+                self.gridFilter.update_grid(self.bzrc.get_occgrid(1)[0],self.bzrc.get_occgrid(1)[1])
+                drawgridfilter.update_grid(self.gridFilter.get_grid())
+                
 
     def map_area(self, bot):
-        print bot.index
+        #print bot.index
+        pointx = bot.x
+        pointy = bot.y
         
-        if bot.index == 1:
+        bot.pf = PotentialField(self.bzrc.get_obstacles(), self.constants['worldsize'], self.myBase)
+        if bot.index == 0:
             goal = Misc()
-            goal.x = 133-400
-            goal.y = 133-400
+            goal.x = 267
+            goal.y = 267
+            goal.r = 0
+        elif bot.index == 1:
+            goal = Misc()
+            goal.x = -267
+            goal.y = -267
             goal.r = 0
         elif bot.index == 2:
             goal = Misc()
-            goal.x = 133-400
-            goal.y = 400-400
+            goal.x = -267
+            goal.y = 0
             goal.r = 0
         elif bot.index == 3:
             goal = Misc()
-            goal.x = 133-400
-            goal.y = 667-400
+            goal.x = -267
+            goal.y = 267
             goal.r = 0
         elif bot.index == 4:
             goal = Misc()
-            goal.x = 400-400
-            goal.y = 133-400
+            goal.x = 0
+            goal.y = -267
             goal.r = 0
         elif bot.index == 5:
             goal = Misc()
-            goal.x = 400-400
-            goal.y = 400-400
+            goal.x = 0
+            goal.y = 0
             goal.r = 0
         elif bot.index == 6:
             goal = Misc()
-            goal.x = 400-400
-            goal.y = 667-400
+            goal.x = 0
+            goal.y = 267
             goal.r = 0
         elif bot.index == 7:
             goal = Misc()
-            goal.x = 667-400
-            goal.y = 133-400
+            goal.x = 267
+            goal.y = -267
             goal.r = 0
         elif bot.index == 8:
             goal = Misc()
-            goal.x = 667-400
-            goal.y = 400-400
+            goal.x = 267
+            goal.y = 0
             goal.r = 0
-        elif bot.index == 0:
-            goal = Misc()
-            goal.x = 667-400
-            goal.y = 667-400
-            goal.r = 0
+        
 
-            
+        
         
         dist = math.sqrt((goal.x - bot.x)**2 + (goal.y - bot.y)**2)
         self.pf.set_goal(goal)
-        self.move_from_vector(bot, goal.x, goal.y, dist)
-        #self.move_to_position(bot,goal.x, goal.y)
-        print "Bot:(",bot.x,",",bot.y,")   Goal:(",goal.x,",",goal.y,")"
-            
-            
-    def get_flag(self, bot):
-        '''Find the closest flag and move to its location'''
-        self.pf.get_flag = True
 
-        closest_flag = None
-        closest_dist = 2 * float(self.constants['worldsize'])
-        for flag in self.flags:
-            if flag.color == self.mycolor:
-                continue
-            dist = math.sqrt((flag.x - bot.x)**2 + (flag.y - bot.y)**2)
-            if dist < closest_dist:
-                closest_dist = dist
-                closest_flag = flag
-        if closest_flag is None:
-            command = Command(bot.index, 0, 0, False)
-            self.commands.append(command)
-        else:
-            goal = Misc()
-            goal.x = closest_flag.x
-            goal.y = closest_flag.y
-            goal.r = 0
-            print "goalx: ",goal.x, "goaly: ",goal.y
-
-            self.pf.set_goal(goal)
-            desired_x, desired_y = self.pf.get_vector(bot)
-            self.move_from_vector(bot, desired_x, desired_y, closest_dist)
-            
-
-    def return_to_base(self, bot):
-        '''Move to my base's location'''
-        self.pf.get_flag = False
-
-        goal = Misc()
-        goal.x = self.pf.home_x
-        goal.y = self.pf.home_y
-        goal.r = 10
-
-        dist = math.sqrt((goal.x-bot.x)**2+(goal.y-bot.y)**2)
-
-        self.pf.set_goal(goal)
-        desired_x, desired_y = self.pf.get_vector(bot)
-        self.move_from_vector(bot, desired_x, desired_y, dist)
         
+        # generate grid
+        x=np.linspace(-400, 400, 80)
+        myx = x
+        y=np.linspace(400, -400, 80)
+        myy = y
+        x, y=np.meshgrid(x, y)
 
-        pass
+        # calculate vector field
+        vx, vy = self.pf.get_vector(bot, myx, myy)
+        print bot.index
 
-    def attack_enemies(self, bot):
-        '''Find the closest enemy and chase it, shooting as you go'''
-        best_enemy = None
-        best_dist = 2 * float(self.constants['worldsize'])
-        for enemy in self.enemies:
-            if enemy.status != 'alive':
-                continue
-            dist = math.sqrt((enemy.x - bot.x)**2 + (enemy.y - bot.y)**2)
-            if dist < best_dist:
-                best_dist = dist
-                best_enemy = enemy
-        if best_enemy is None:
-            command = Command(bot.index, 0, 0, False)
-            self.commands.append(command)
-        else:
-            self.move_to_position(bot, best_enemy.x, best_enemy.y)
+        #set the arrays for x and y potential fields, as well as dist
+        #TODO dist shouldn't be set in an array here, as it constantly changes
 
+        self.pfArrx.append(vx)
+        self.pfArry.append(vy)
+        self.distArr.append(dist)
+        
+        
+    def makeMap(self, bot):
+        #get the potential field value at the position in the arrays doing the following math
+            #add 400 to get the range to be 0->800
+            #divide by 80 (number of position samples in the linespace)
+            #multiply the modified x and y values to get the position in a single dimension array
+
+        desired_x = (self.pfArrx[bot.index][int(((bot.x+400)/80)*((bot.y+400) / 80))])
+        desired_y = (self.pfArry[bot.index][int(((bot.x+400)/80)*((bot.y+400) / 80))])
+
+        #print "Bot:(",bot.x,",",bot.y,")   Desired:(",desired_x,",",desired_y,")    "
+        self.move_from_vector(bot, desired_x, desired_y, self.distArr[bot.index])
+
+            
     def move_from_vector(self, bot, vx, vy, distance):
         target_angle = math.atan2(vy, vx)
         relative_angle = self.normalize_angle(target_angle - bot.angle)
@@ -212,14 +201,16 @@ class Agent(object):
 
         #print bot.index, v, omega, bot.flag
 
-        command = Command(bot.index, v, omega, shootOnCooldown)
+        command = Command(bot.index, v, omega, False)
         self.commands.append(command)
 
     def move_to_position(self, bot, target_x, target_y):
+       
         target_angle = math.atan2(target_y - bot.y,
                 target_x - bot.x)
         relative_angle = self.normalize_angle(target_angle - bot.angle)
-        command = Command(bot.index, 1, 2 * relative_angle, True)
+        
+        command = Command(bot.index, 1, 2 * relative_angle, False)
         self.commands.append(command)
 
     def normalize_angle(self, angle):
@@ -244,13 +235,12 @@ def main():
         print >>sys.stderr, '%s: incorrect number of arguments' % execname
         print >>sys.stderr, 'usage: %s hostname port' % sys.argv[0]
         sys.exit(-1)
-
     # Connect.
     #bzrc = BZRC(host, int(port), debug=True)
     bzrc = BZRC(host, int(port))
-
+ 
     agent = Agent(bzrc)
-
+    drawgridfilter.init_window(800, 800)
     prev_time = time.time()
 
     # Run the agent

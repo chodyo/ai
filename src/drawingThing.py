@@ -5,12 +5,7 @@ import numpy as np
 from potentialFieldForDrawing import PotentialField
 from bzrc import BZRC, Command
 
-
-class Misc(object):
-	pass
-
-
-bzrc = BZRC("localhost", 45207)
+bzrc = BZRC("localhost", 60307)
 constants = bzrc.get_constants()
 
 obstacles = bzrc.get_obstacles()
@@ -21,44 +16,61 @@ bases = bzrc.get_bases()
 mybase = None
 for base in bases:
 	if base.color == mycolor:
-		mybase = base
+                mybase = base
 
 mytanks, othertanks, flags, shots = bzrc.get_lots_o_stuff()
 myflags = flags
 
-flag=flags[2]
+flag=flags[1]
 aTank=mytanks[0]
 tempFields = PotentialField(obstacles, worldsize, mybase)
-goal = Misc()
-goal.x = flag.x
-goal.y = flag.y
+
+goal = tempFields.myMisc
+goal.x = -267
+goal.y = -267
 goal.r = 0
-print "x is:",aTank.x
-print "y is:",aTank.y
-tempFields.set_goal(goal)
+tempFields.add_goal(goal)
+
+
+
+
+#for flag in myflags:
+#	tempFields.resetMisc()
+#	goal = tempFields.myMisc
+#	if flag.color == mycolor:
+#		continue
+ #        	          
+#	else:
+#		goal = tempFields.myMisc
+#		goal.x = flag.x
+#		goal.y = flag.y
+#		goal.r = 0
+
+#	tempFields.add_goal(goal)
+
+
+
+
 
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
 
 # generate grid
-x=np.linspace(-400, 400, 50)
-y=np.linspace(-400, 400, 50)
+x=np.linspace(-400, 400, 80)
+myx = x
+y=np.linspace(400, -400, 80)
+myy = y
 x, y=np.meshgrid(x, y)
 
-aTank.x=x
-aTank.y=y
 # calculate vector field
-print "x is:",aTank.x
-print "y is:",aTank.y
-vx, vy = tempFields.get_vector(aTank)
-print vx
+vx, vy = tempFields.get_vector(aTank, myx, myy)
+
 # plot vecor field
 ax.quiver(x, y, vx, vy, pivot='middle', color='r', headwidth=4, headlength=6)
 ax.set_xlabel('x')
 ax.set_ylabel('y')
-plt.show()
+#plt.show()
 
 
-#plt.savefig('visualization_quiver_demo.png')
-
+plt.savefig('visualization_quiver_demo.png')
