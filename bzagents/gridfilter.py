@@ -35,7 +35,7 @@ class GridFilter(object):
 			for y in range(0, len(new_grid[x])):
 				# print x+pos[0], y+pos[1], new_grid[x][y]
 				priori = self.grid[x+start_x][y+start_y]
-				self.grid[x+start_x][y+start_y] = self.probability(priori, new_grid[x][y])
+				self.grid[y+start_y][x+start_x] = self.probability(priori, new_grid[x][y])
 		print("Updated grid")
 
 	# prepare the grid for drawing
