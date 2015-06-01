@@ -59,9 +59,6 @@ class Agent(object):
 
         self.last_draw = 0
         self.tick_count = 0
-        # initialize bot goals
-        for bot in self.mytanks:
-            self.map_area(bot)
 
     def tick(self, time_diff):
         '''Some time has passed; decide what to do next'''
@@ -77,15 +74,18 @@ class Agent(object):
         # Reset my set of commands (we don't want to run old commands)
         self.commands = []
 
+            # if bot.index < botCount:
+            # this parameter controls how long to wait before the bots change protocol
+            # for the first phase, they should "map_area", ie, go to a designated quadrant - specified in init
+            # for the second phase, they should find the "closest_goal", ie, find the nearest uncharted zone.
         for bot in self.mytanks:
-            if bot.index < botCount:
-                # this parameter controls how long to wait before the bots change protocol
-                # for the first phase, they should "map_area", ie, go to a designated quadrant - specified in init
-                # for the second phase, they should find the "closest_goal", ie, find the nearest uncharted zone.
-                if self.tick_count > 1000:
-                    if self.last_draw > 150:
-                        bot.goalx, bot.goaly = self.gridFilter.closest_goal(bot.x, bot.y)
-                self.move_to_position(bot, bot.goalx, bot.goaly)
+            x, y = self.map_area(bot)
+            bot.goalx = x
+            bot.goaly = y
+            if self.tick_count > 500:
+                if self.last_draw > 100:
+                    bot.goalx, bot.goaly = self.gridFilter.closest_goal(bot.x, bot.y)
+            self.move_to_position(bot, bot.goalx, bot.goaly)
 
         self.last_draw += time_diff
         if self.last_draw > 150:
@@ -108,40 +108,28 @@ class Agent(object):
         #print bot.index
         pointx = bot.x
         pointy = bot.y
+        botID = bot.index
 
-        x = 0
-        y = 0
-
-        if bot.index == 0:
-           x = 267
-           y = 267
-        elif bot.index == 1:
-           x = -267
-           y = -267
-        elif bot.index == 2:
-           x = -267
-           y = 0
-        elif bot.index == 3:
-           x = -267
-           y = 267
-        elif bot.index == 4:
-           x = 0
-           y = -267
-        elif bot.index == 5:
-           x = 0
-           y = 0
-        elif bot.index == 6:
-           x = 0
-           y = 267
-        elif bot.index == 7:
-           x = 267
-           y = -267
-        elif bot.index == 8:
-           x = 267
-           y = 0
-
-        bot.goalx = x
-        bot.goaly = y
+        if botID == 0:
+           return 267,267
+        elif botID == 1:
+           return -267,-267
+        elif botID == 2:
+           return -267,0
+        elif botID == 3:
+           return -267,267
+        elif botID == 4:
+           return 0,-267
+        elif botID == 5:
+           return 0,0
+        elif botID == 6:
+           return 0,267
+        elif botID == 7:
+           return 267,-267
+        elif botID == 8:
+           return 267,0
+        else:
+            return pointx, pointy
         
     def makeMap(self, bot):
         #print "dddddddddddddddddddddddd",self.pfArrx[bot.index]
