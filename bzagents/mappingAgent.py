@@ -31,7 +31,7 @@ import numpy as np
 # time to wait between ticks in milliseconds
 sleepTime = 0
 # number of bots to control
-botCount = 9
+botCount = 10
 # should the bots fire uncontrollably?
 shootOnCooldown = False
 
@@ -59,13 +59,20 @@ class Agent(object):
 
         self.last_draw = 0
         self.tick_count = 0
+        self.botObjs = []
+        for i in range(0, botCount):
+            bot = Misc()
+            bot.goalx = 0
+            bot.goaly = 0
+            bot.last_seek = 0
+            self.botObjs.append(bot)
+
 
     def tick(self, time_diff):
         '''Some time has passed; decide what to do next'''
-        self.tick_count += 1
-        print self.tick_count
         # Get information from the BZRC server
         mytanks, othertanks, flags, shots = self.bzrc.get_lots_o_stuff()
+        # LOOK CODY! WE UPDATE THE TANKS EVERY SINGLE FREAKING TIME! STOP TRYING TO SAVE STUFF ON THE TANK OBJECT!
         self.mytanks = mytanks
         self.othertanks = othertanks
         self.flags = flags
@@ -75,19 +82,30 @@ class Agent(object):
         # Reset my set of commands (we don't want to run old commands)
         self.commands = []
 
+        self.tick_count += time_diff
+        print self.tick_count
         self.last_draw += time_diff
             # if bot.index < botCount:
             # this parameter controls how long to wait before the bots change protocol
             # for the first phase, they should "map_area", ie, go to a designated quadrant - specified in init
             # for the second phase, they should find the "closest_goal", ie, find the nearest uncharted zone.
         for bot in self.mytanks:
+            if bot.index >= botCount:
+                continue
             x, y = self.map_area(bot)
-            bot.goalx = x
-            bot.goaly = y
-            if self.tick_count > 150:
-                if self.last_draw > 50:
-                    bot.goalx, bot.goaly = self.gridFilter.closest_goal(bot.x, bot.y)
-            self.move_to_position(bot, bot.goalx, bot.goaly)
+            self.botObjs[bot.index].goalx = x
+            self.botObjs[bot.index].goaly = y
+
+            self.botObjs[bot.index].last_seek += time_diff
+            # switch from assignment phase to goal-seek phase after 15 seconds
+            if self.tick_count > 1500:
+                # only calculate a new goal if it's been more than ~5 seconds since last time
+                if self.botObjs[bot.index].last_seek > 250:
+                    self.botObjs[bot.index].last_seek = 0
+                    x,y = self.gridFilter.closest_goal(bot.x, bot.y)
+                    self.botObjs[bot.index].goalx = x
+                    self.botObjs[bot.index].goaly = y
+            self.move_to_position(bot, self.botObjs[bot.index].goalx, self.botObjs[bot.index].goaly)
 
         if self.last_draw > 50:
             self.last_draw = 0

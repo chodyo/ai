@@ -81,27 +81,34 @@ class GridFilter(object):
 		closest_x = pos_x
 		closest_y = pos_y
 
-# MAJOR TODO:
-# python arrays wrap. -500, 0 -> 300, 0. this means the bots will eventually head over to one side. BOTS NEED TO BE KEPT WITHIN -400, 400
-
 		# nearby
 		closeboundary = (int)(self.worldsize/4)
-		for x in range((int)(pos_x-closeboundary), (int)(pos_x+closeboundary)):
-			for y in range((int)(pos_y-closeboundary), (int)(pos_y+closeboundary)):
+
+		left = (int)(pos_x-closeboundary)
+		top = (int)(pos_y-closeboundary)
+		right = (int)(pos_x+closeboundary)
+		bottom = (int)(pos_y+closeboundary)
+
+		if left < -self.worldsize/2:
+			left = -self.worldsize/2
+		if top < -self.worldsize/2:
+			top = -self.worldsize/2
+		if right > self.worldsize/2:
+			right = self.worldsize/2
+		if bottom > self.worldsize/2:
+			bottom = self.worldsize/2
+
+		for x in range(left, right):
+			for y in range(top, bottom):
 				if (self.grid[x][y] > CONFIDENCE and self.grid[x][y] < 1-CONFIDENCE):
 					dist = numpy.sqrt((x-pos_x)**2 + (y-pos_y)**2)
 					if dist < closest_dist:
-						closest_dist = dist
-						closest_x = x
-						closest_y = y
-					# speed?
-					if dist <= self.worldsize/4:
-						print closest_x, closest_y
-						return closest_x, closest_y
+						print x, y
+						return x, y
 
 		# whole map
-		for x in range(0, len(self.grid)):
-			for y in range(0, len(self.grid[x])):
+		for x in range(-len(self.grid)/2, len(self.grid)/2):
+			for y in range(-len(self.grid[x])/2, len(self.grid[x])/2):
 				if (self.grid[x][y] > CONFIDENCE and self.grid[x][y] < 1-CONFIDENCE):
 					dist = numpy.sqrt((x-pos_x)**2 + (y-pos_y)**2)
 					if dist < closest_dist:
@@ -119,7 +126,7 @@ class GridFilter(object):
 if __name__ == '__main__':
 	test_true_pos = 0.97
 	test_true_neg = 0.90
-	test_worldsize = 7
+	test_worldsize = 8
 
 	gf = GridFilter(test_true_pos, test_true_neg, test_worldsize)
 	gf.grid[4][4] = 0.72
@@ -134,7 +141,7 @@ if __name__ == '__main__':
 	gf.update_grid(new_pos, new_grid)
 	print gf.grid
 
-	print gf.closest_goal(5, 4)
+	print gf.closest_goal(-4, -4)
 
 	# this needs to be converted to the agent's code
 	# drawgridfilter.init_window(gf.worldsize, gf.worldsize)
