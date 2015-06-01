@@ -63,6 +63,7 @@ class Agent(object):
     def tick(self, time_diff):
         '''Some time has passed; decide what to do next'''
         self.tick_count += 1
+        print self.tick_count
         # Get information from the BZRC server
         mytanks, othertanks, flags, shots = self.bzrc.get_lots_o_stuff()
         self.mytanks = mytanks
@@ -74,6 +75,7 @@ class Agent(object):
         # Reset my set of commands (we don't want to run old commands)
         self.commands = []
 
+        self.last_draw += time_diff
             # if bot.index < botCount:
             # this parameter controls how long to wait before the bots change protocol
             # for the first phase, they should "map_area", ie, go to a designated quadrant - specified in init
@@ -82,13 +84,12 @@ class Agent(object):
             x, y = self.map_area(bot)
             bot.goalx = x
             bot.goaly = y
-            if self.tick_count > 500:
-                if self.last_draw > 100:
+            if self.tick_count > 150:
+                if self.last_draw > 50:
                     bot.goalx, bot.goaly = self.gridFilter.closest_goal(bot.x, bot.y)
             self.move_to_position(bot, bot.goalx, bot.goaly)
 
-        self.last_draw += time_diff
-        if self.last_draw > 150:
+        if self.last_draw > 50:
             self.last_draw = 0
             self.update_map()
             drawgridfilter.draw_grid()

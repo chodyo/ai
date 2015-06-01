@@ -88,8 +88,13 @@ class GridFilter(object):
 						closest_dist = dist
 						closest_x = x
 						closest_y = y
+					# speed?
+					if dist <= self.worldsize/4:
+						print closest_x, closest_y
+						return closest_x, closest_y
 		print closest_x, closest_y
 		return closest_x, closest_y
+
 
 if __name__ == '__main__':
 	test_true_pos = 0.97
