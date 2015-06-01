@@ -61,6 +61,7 @@ class Agent(object):
 
         self.last_draw = 0
         self.tick_count = 0
+        self.tick_time = 0
         self.botObjs = []
         for i in range(0, botCount):
             bot = Misc()
@@ -84,9 +85,9 @@ class Agent(object):
         # Reset my set of commands (we don't want to run old commands)
         self.commands = []
 
-        self.tick_count += time_diff
-        print self.tick_count
-        self.last_draw += time_diff
+        self.tick_count += 1
+        self.tick_time += time_diff
+        print self.tick_time
             # if bot.index < botCount:
             # this parameter controls how long to wait before the bots change protocol
             # for the first phase, they should "map_area", ie, go to a designated quadrant - specified in init
@@ -94,23 +95,27 @@ class Agent(object):
         for bot in self.mytanks:
             if bot.index >= botCount:
                 continue
-            x, y = self.map_area(bot)
-            self.botObjs[bot.index].goalx = x
-            self.botObjs[bot.index].goaly = y
 
             self.botObjs[bot.index].last_seek += time_diff
+
+            if self.tick_time <= 50:
+                x, y = self.map_area(bot)
+                self.botObjs[bot.index].goalx = x
+                self.botObjs[bot.index].goaly = y
             # switch from assignment phase to goal-seek phase after 15 seconds
-            if self.tick_count > 1500:
+            else: # if self.tick_time > 50:
                 # only calculate a new goal if it's been more than ~5 seconds since last time
-                if self.botObjs[bot.index].last_seek > 500:
+                if self.botObjs[bot.index].last_seek > 5:
                     self.botObjs[bot.index].last_seek = 0
                     x,y = self.gridFilter.closest_goal(bot.x, bot.y)
                     self.botObjs[bot.index].goalx = x
                     self.botObjs[bot.index].goaly = y
+                    print bot.index, self.botObjs[bot.index].goalx, self.botObjs[bot.index].goaly
             self.move_to_position(bot, self.botObjs[bot.index].goalx, self.botObjs[bot.index].goaly)
 
-        if self.last_draw > 100:
-            self.last_draw = 0
+        # how often should you update the grid?
+        draw = 25
+        if self.tick_count % draw == 0:
             self.update_map()
             drawgridfilter.draw_grid()
 
@@ -217,7 +222,10 @@ def main():
     # Run the agent
     try:
         while True:
-            time_diff = time.time() - prev_time
+            now_time = time.time()
+            time_diff = now_time - prev_time
+            prev_time = now_time
+
             agent.tick(time_diff)
             time.sleep(sleepTime / 1000)
     except KeyboardInterrupt:

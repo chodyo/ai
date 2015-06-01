@@ -82,7 +82,7 @@ class GridFilter(object):
 		closest_y = pos_y
 
 		# nearby
-		closeboundary = (int)(self.worldsize/4)
+		closeboundary = (int)(self.worldsize/3)
 
 		left = (int)(pos_x-closeboundary)
 		top = (int)(pos_y-closeboundary)
@@ -103,8 +103,12 @@ class GridFilter(object):
 				if (self.grid[x][y] > CONFIDENCE and self.grid[x][y] < 1-CONFIDENCE):
 					dist = numpy.sqrt((x-pos_x)**2 + (y-pos_y)**2)
 					if dist < closest_dist:
-						print x, y
-						return x, y
+						closest_dist = dist
+						closest_x = x
+						closest_y = y
+						# print x, y
+		if (closest_x != pos_x or closest_y != pos_y):
+			return closest_x, closest_y
 
 		# whole map
 		for x in range(-len(self.grid)/2, len(self.grid)/2):
@@ -116,10 +120,10 @@ class GridFilter(object):
 						closest_x = x
 						closest_y = y
 					# speed?
-					if dist <= self.worldsize/4:
-						print closest_x, closest_y
+					if dist <= closeboundary*2:
+						# print closest_x, closest_y
 						return closest_x, closest_y
-		print closest_x, closest_y
+		# print closest_x, closest_y
 		return closest_x, closest_y
 
 
