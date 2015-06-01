@@ -34,6 +34,8 @@ sleepTime = 0
 botCount = 10
 # should the bots fire uncontrollably?
 shootOnCooldown = False
+# speed of tanks - KEEP BETWEEN 0 AND 1!!! (also controls speed of rotation)
+tankspeed = 0.75
 
 class Agent(object):
 
@@ -100,14 +102,14 @@ class Agent(object):
             # switch from assignment phase to goal-seek phase after 15 seconds
             if self.tick_count > 1500:
                 # only calculate a new goal if it's been more than ~5 seconds since last time
-                if self.botObjs[bot.index].last_seek > 250:
+                if self.botObjs[bot.index].last_seek > 500:
                     self.botObjs[bot.index].last_seek = 0
                     x,y = self.gridFilter.closest_goal(bot.x, bot.y)
                     self.botObjs[bot.index].goalx = x
                     self.botObjs[bot.index].goaly = y
             self.move_to_position(bot, self.botObjs[bot.index].goalx, self.botObjs[bot.index].goaly)
 
-        if self.last_draw > 50:
+        if self.last_draw > 100:
             self.last_draw = 0
             self.update_map()
             drawgridfilter.draw_grid()
@@ -179,7 +181,7 @@ class Agent(object):
                 target_x - bot.x)
         relative_angle = self.normalize_angle(target_angle - bot.angle)
         
-        command = Command(bot.index, 1, 2 * relative_angle, False)
+        command = Command(bot.index, tankspeed, 2*relative_angle*tankspeed, False)
         self.commands.append(command)
 
     def normalize_angle(self, angle):
