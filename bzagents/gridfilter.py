@@ -20,21 +20,23 @@ class GridFilter(object):
 	# worldsize is the width/height of a square world. the default from what we've been using is 800x800
 	def __init__(self, true_pos, true_neg, worldsize=800):
 		self.worldsize = worldsize
-		self.true_pos = true_pos
-		self.true_neg = true_neg
+		self.true_pos = float(true_pos)
+		self.true_neg = float(true_neg)
 
+		print("Values are: ", self.true_pos+self.true_neg)
 		self.grid = numpy.empty([worldsize, worldsize])
 		self.grid.fill(-1)
 
 	# iterate through the new grid
 	def update_grid(self, pos, new_grid):
-		start_x = pos[0]
-		start_y = pos[1]
+		start_y = int(float(pos[0]))-400
+		start_x = int(float(pos[1]))-400
 		for x in range(0, len(new_grid)):
 			for y in range(0, len(new_grid[x])):
 				# print x+pos[0], y+pos[1], new_grid[x][y]
 				priori = self.grid[x+start_x][y+start_y]
 				self.grid[x+start_x][y+start_y] = self.probability(priori, new_grid[x][y])
+		print("Updated grid")
 
 	# prepare the grid for drawing
 	def get_grid(self):
@@ -46,12 +48,10 @@ class GridFilter(object):
 					outgrid[x][y] = 0.5
 				# not occupied
 				elif self.grid[x][y] < CONFIDENCE:
-					# white
-					outgrid[x][y] = 1
+					outgrid[x][y] = 0
 				# occupied
 				else:
-					# black
-					outgrid[x][y] = 0
+					outgrid[x][y] = 1
 		return outgrid
 
 
@@ -63,10 +63,10 @@ class GridFilter(object):
 
 		# if occupied
 		A = self.true_pos
-		B = 1 - self.true_neg
+		B = 1 - float(self.true_neg)
 
 		if not occupied:
-			A = 1 - self.true_pos
+			A = 1 - float(self.true_pos)
 			B = self.true_neg
 
 		alpha = 1 / (priori*A + inv_priori*B)

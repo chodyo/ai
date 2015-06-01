@@ -1,0 +1,13 @@
+To compile bots to .pyc (to hide the code from students), run:
+
+python -m compileall -lf .
+mv *.pyc compiled/
+
+Then to run a bot, use:
+
+./compiled/blind.py [bot_name] [host] [port]
+
+As of 3/19/2010, the agents in this folder (TA Agents?) are ranked in order of
+difficulty/sophistication.  The higher the number, the better the bot.  There
+should also be a comment at the top of each agent file describing what its
+basic capabilities are.

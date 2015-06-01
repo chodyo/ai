@@ -10,7 +10,6 @@ from numpy import zeros
 grid = None
 
 def draw_grid():
-
     # This assumes you are using a numpy array for your grid
     width, height = grid.shape
     glRasterPos2f(-1, -1)
@@ -21,6 +20,7 @@ def draw_grid():
 def update_grid(new_grid):
     global grid
     grid = new_grid
+    #print("shape ", grid.shape)
 
 
 

@@ -1,0 +1,6 @@
+Extract the contents of this tar and then run
+./blind.py <agent> <server> <post> as normal
+
+Agents included:
+ourAgent
+ourDumbAgent
