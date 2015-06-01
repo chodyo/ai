@@ -29,8 +29,8 @@ class GridFilter(object):
 
 	# iterate through the new grid
 	def update_grid(self, pos, new_grid):
-		start_x = int(float(pos[0]))-self.worldsize/2
-		start_y = int(float(pos[1]))-self.worldsize/2
+		start_x = pos[0]+(int)(self.worldsize/2)
+		start_y = pos[1]+(int)(self.worldsize/2)
 		for x in range(0, len(new_grid)):
 			for y in range(0, len(new_grid[x])):
 				# print x+pos[0], y+pos[1], new_grid[x][y]
@@ -77,60 +77,77 @@ class GridFilter(object):
 	# returns the closest location that needs to be explored
 	# this is not very efficient, just a brute force algorithm. don't spam this method.
 	def closest_goal(self, pos_x, pos_y):
+
 		closest_dist = self.worldsize**2
 		closest_x = pos_x
 		closest_y = pos_y
 
-		# nearby
-		closeboundary = (int)(self.worldsize/3)
+		boundary = (int)(self.worldsize/2)
+		pos_x += boundary
+		pos_y += boundary
 
-		left = (int)(pos_x-closeboundary)
-		top = (int)(pos_y-closeboundary)
-		right = (int)(pos_x+closeboundary)
-		bottom = (int)(pos_y+closeboundary)
+		r = 0
+		while r < self.worldsize:
+			for a in range((int)(max(pos_x-r, 0)), (int)(min(pos_x+r+1, self.worldsize))):
+				for b in range((int)(max(pos_y-r, 0)), (int)(min(pos_y+r+1, self.worldsize))):
+					prob = self.grid[a][b]
+					# print a-boundary, b-boundary, prob
+					if prob > CONFIDENCE and prob < 1-CONFIDENCE:
+						return a-boundary, b-boundary
+			r += 1
+		# for when it's all done
+		return 0, -375
 
-		if left < -self.worldsize/2:
-			left = -self.worldsize/2
-		if top < -self.worldsize/2:
-			top = -self.worldsize/2
-		if right > self.worldsize/2:
-			right = self.worldsize/2
-		if bottom > self.worldsize/2:
-			bottom = self.worldsize/2
+		# # nearby
+		# closeboundary = (int)(self.worldsize/3)
 
-		for x in range(left, right):
-			for y in range(top, bottom):
-				if (self.grid[x][y] > CONFIDENCE and self.grid[x][y] < 1-CONFIDENCE):
-					dist = numpy.sqrt((x-pos_x)**2 + (y-pos_y)**2)
-					if dist < closest_dist:
-						closest_dist = dist
-						closest_x = x
-						closest_y = y
-						# print x, y
-		if (closest_x != pos_x or closest_y != pos_y):
-			return closest_x, closest_y
+		# left = (int)(pos_x-closeboundary)
+		# top = (int)(pos_y-closeboundary)
+		# right = (int)(pos_x+closeboundary)
+		# bottom = (int)(pos_y+closeboundary)
 
-		# whole map
-		for x in range(-len(self.grid)/2, len(self.grid)/2):
-			for y in range(-len(self.grid[x])/2, len(self.grid[x])/2):
-				if (self.grid[x][y] > CONFIDENCE and self.grid[x][y] < 1-CONFIDENCE):
-					dist = numpy.sqrt((x-pos_x)**2 + (y-pos_y)**2)
-					if dist < closest_dist:
-						closest_dist = dist
-						closest_x = x
-						closest_y = y
-					# speed?
-					if dist <= closeboundary*2:
-						# print closest_x, closest_y
-						return closest_x, closest_y
-		# print closest_x, closest_y
-		return closest_x, closest_y
+		# if left < -self.worldsize/2:
+		# 	left = -self.worldsize/2
+		# if top < -self.worldsize/2:
+		# 	top = -self.worldsize/2
+		# if right > self.worldsize/2:
+		# 	right = self.worldsize/2
+		# if bottom > self.worldsize/2:
+		# 	bottom = self.worldsize/2
+
+		# for x in range(left, right):
+		# 	for y in range(top, bottom):
+		# 		if (self.grid[x][y] > CONFIDENCE and self.grid[x][y] < 1-CONFIDENCE):
+		# 			dist = numpy.sqrt((x-pos_x)**2 + (y-pos_y)**2)
+		# 			if dist < closest_dist:
+		# 				closest_dist = dist
+		# 				closest_x = x
+		# 				closest_y = y
+		# 				# print x, y
+		# if (closest_x != pos_x or closest_y != pos_y):
+		# 	return closest_x, closest_y
+
+		# # whole map
+		# for x in range(-len(self.grid)/2, len(self.grid)/2):
+		# 	for y in range(-len(self.grid[x])/2, len(self.grid[x])/2):
+		# 		if (self.grid[x][y] > CONFIDENCE and self.grid[x][y] < 1-CONFIDENCE):
+		# 			dist = numpy.sqrt((x-pos_x)**2 + (y-pos_y)**2)
+		# 			if dist < closest_dist:
+		# 				closest_dist = dist
+		# 				closest_x = x
+		# 				closest_y = y
+		# 			# speed?
+		# 			if dist <= closeboundary*2:
+		# 				# print closest_x, closest_y
+		# 				return closest_x, closest_y
+		# # print closest_x, closest_y
+		# return closest_x, closest_y
 
 
 if __name__ == '__main__':
 	test_true_pos = 0.97
 	test_true_neg = 0.90
-	test_worldsize = 8
+	test_worldsize = 6
 
 	gf = GridFilter(test_true_pos, test_true_neg, test_worldsize)
 	gf.grid[4][4] = 0.72
@@ -145,7 +162,7 @@ if __name__ == '__main__':
 	gf.update_grid(new_pos, new_grid)
 	print gf.grid
 
-	print gf.closest_goal(-4, -4)
+	print gf.closest_goal(1, 1)
 
 	# this needs to be converted to the agent's code
 	# drawgridfilter.init_window(gf.worldsize, gf.worldsize)
