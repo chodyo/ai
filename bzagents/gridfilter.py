@@ -29,8 +29,8 @@ class GridFilter(object):
 
 	# iterate through the new grid
 	def update_grid(self, pos, new_grid):
-		start_y = int(float(pos[0]))-400
-		start_x = int(float(pos[1]))-400
+		start_x = int(float(pos[0]))-400
+		start_y = int(float(pos[1]))-400
 		for x in range(0, len(new_grid)):
 			for y in range(0, len(new_grid[x])):
 				# print x+pos[0], y+pos[1], new_grid[x][y]
@@ -48,10 +48,12 @@ class GridFilter(object):
 					outgrid[x][y] = 0.5
 				# not occupied
 				elif self.grid[x][y] < CONFIDENCE:
-					outgrid[x][y] = 0
+					# white
+					outgrid[x][y] = 1
 				# occupied
 				else:
-					outgrid[x][y] = 1
+					# black
+					outgrid[x][y] = 0
 		return outgrid
 
 

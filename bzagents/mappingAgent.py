@@ -74,12 +74,15 @@ class Agent(object):
         # Reset my set of commands (we don't want to run old commands)
         self.commands = []
 
-        #>= botCount
         for bot in self.mytanks:
-            if bot.index < 1:
-                if tick_count > 10:
-                    x, y = self.gridFilter.closest_goal(bot.x, bot.y)
-                    self.move_to_position(bot, x, y)
+            if bot.index < botCount:
+                # this parameter controls how long to wait before the bots change protocol
+                # for the first phase, they should "map_area", ie, go to a designated quadrant
+                # for the second phase, they should find the "closest_goal", ie, find the nearest uncharted zone.
+                if self.tick_count > 1000:
+                    if self.last_draw > 250:
+                        bot.goalx, bot.goaly = self.gridFilter.closest_goal(bot.x, bot.y)
+                    self.move_to_position(bot, bot.goalx, bot.goaly)
                 else:
                     self.map_area(bot)
 
@@ -94,7 +97,7 @@ class Agent(object):
 
     def update_map(self):
         for bot in self.mytanks:
-            if bot.index < 1:
+            if bot.index < botCount:
                 pos, grid = self.bzrc.get_occgrid(bot.index)
                 self.gridFilter.update_grid(pos,grid)
                 drawgridfilter.update_grid(self.gridFilter.get_grid())
