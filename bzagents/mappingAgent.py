@@ -29,7 +29,7 @@ import numpy as np
 #################################################################
 
 # time to wait between ticks in milliseconds
-sleepTime = 50
+sleepTime = 0
 # number of bots to control
 botCount = 9
 # should the bots fire uncontrollably?

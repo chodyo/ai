@@ -80,6 +80,26 @@ class GridFilter(object):
 		closest_dist = self.worldsize**2
 		closest_x = pos_x
 		closest_y = pos_y
+
+# MAJOR TODO:
+# python arrays wrap. -500, 0 -> 300, 0. this means the bots will eventually head over to one side. BOTS NEED TO BE KEPT WITHIN -400, 400
+
+		# nearby
+		closeboundary = (int)(self.worldsize/4)
+		for x in range((int)(pos_x-closeboundary), (int)(pos_x+closeboundary)):
+			for y in range((int)(pos_y-closeboundary), (int)(pos_y+closeboundary)):
+				if (self.grid[x][y] > CONFIDENCE and self.grid[x][y] < 1-CONFIDENCE):
+					dist = numpy.sqrt((x-pos_x)**2 + (y-pos_y)**2)
+					if dist < closest_dist:
+						closest_dist = dist
+						closest_x = x
+						closest_y = y
+					# speed?
+					if dist <= self.worldsize/4:
+						print closest_x, closest_y
+						return closest_x, closest_y
+
+		# whole map
 		for x in range(0, len(self.grid)):
 			for y in range(0, len(self.grid[x])):
 				if (self.grid[x][y] > CONFIDENCE and self.grid[x][y] < 1-CONFIDENCE):
