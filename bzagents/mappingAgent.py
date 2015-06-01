@@ -59,6 +59,9 @@ class Agent(object):
 
         self.last_draw = 0
         self.tick_count = 0
+        # initialize bot goals
+        for bot in self.mytanks:
+            self.map_area(bot)
 
     def tick(self, time_diff):
         '''Some time has passed; decide what to do next'''
@@ -77,17 +80,15 @@ class Agent(object):
         for bot in self.mytanks:
             if bot.index < botCount:
                 # this parameter controls how long to wait before the bots change protocol
-                # for the first phase, they should "map_area", ie, go to a designated quadrant
+                # for the first phase, they should "map_area", ie, go to a designated quadrant - specified in init
                 # for the second phase, they should find the "closest_goal", ie, find the nearest uncharted zone.
                 if self.tick_count > 1000:
-                    if self.last_draw > 250:
+                    if self.last_draw > 150:
                         bot.goalx, bot.goaly = self.gridFilter.closest_goal(bot.x, bot.y)
-                    self.move_to_position(bot, bot.goalx, bot.goaly)
-                else:
-                    self.map_area(bot)
+                self.move_to_position(bot, bot.goalx, bot.goaly)
 
         self.last_draw += time_diff
-        if self.last_draw > 250:
+        if self.last_draw > 150:
             self.last_draw = 0
             self.update_map()
             drawgridfilter.draw_grid()
@@ -108,201 +109,39 @@ class Agent(object):
         pointx = bot.x
         pointy = bot.y
 
+        x = 0
+        y = 0
+
         if bot.index == 0:
-           goal = Misc()
-           goal.x = 267
-           goal.y = 267
-           goal.r = 0
+           x = 267
+           y = 267
         elif bot.index == 1:
-           goal = Misc()
-           goal.x = -267
-           goal.y = -267
-           goal.r = 0
+           x = -267
+           y = -267
         elif bot.index == 2:
-           goal = Misc()
-           goal.x = -267
-           goal.y = 0
-           goal.r = 0
+           x = -267
+           y = 0
         elif bot.index == 3:
-           goal = Misc()
-           goal.x = -267
-           goal.y = 267
-           goal.r = 0
+           x = -267
+           y = 267
         elif bot.index == 4:
-           goal = Misc()
-           goal.x = 0
-           goal.y = -267
-           goal.r = 0
+           x = 0
+           y = -267
         elif bot.index == 5:
-           goal = Misc()
-           goal.x = 0
-           goal.y = 0
-           goal.r = 0
+           x = 0
+           y = 0
         elif bot.index == 6:
-           goal = Misc()
-           goal.x = 0
-           goal.y = 267
-           goal.r = 0
+           x = 0
+           y = 267
         elif bot.index == 7:
-           goal = Misc()
-           goal.x = 267
-           goal.y = -267
-           goal.r = 0
+           x = 267
+           y = -267
         elif bot.index == 8:
-           goal = Misc()
-           goal.x = 267
-           goal.y = 0
-           goal.r = 0
-       
-      
-        # dist = math.sqrt((goal.x - bot.x)**2 + (goal.y - bot.y)**2)
-        self.move_to_position(bot, goal.x, goal.y);
+           x = 267
+           y = 0
 
-    # def __init__(self, bzrc):
-    #     self.bzrc = bzrc
-    #     self.constants = self.bzrc.get_constants()
-    #     self.commands = []
-    #     self.gridFilter = GridFilter(self.constants['truepositive'],self.constants['truenegative']);
-    #     self.pfArrx = []
-    #     self.pfArry = []
-    #     self.distArr = []
-    #     # obstacles = bzrc.get_obstacles()
-    #     worldsize = self.constants['worldsize']
-
-    #     self.mytanks = bzrc.get_mytanks()
-    #     self.mycolor = self.mytanks[0].callsign[:-1]
-    #     bases = bzrc.get_bases()
-    #     mybase = None
-    #     for base in bases:
-    #         if base.color == self.mycolor:
-    #             mybase = base
-    #     self.myBase = mybase
-    #     # self.pf = PotentialField(obstacles, worldsize, mybase)
-
-    #     for bot in self.mytanks:
-    #         if bot.index >= botCount:
-    #             continue
-    #         elif bot.index<botCount:
-    #             self.map_area(bot)
-
-    # def tick(self, time_diff):
-    #     '''Some time has passed; decide what to do next'''
-    #     # Get information from the BZRC server
-    #     mytanks, othertanks, flags, shots = self.bzrc.get_lots_o_stuff()
-    #     self.mytanks = mytanks
-    #     self.othertanks = othertanks
-    #     self.flags = flags
-    #     self.shots = 0
-    #     self.enemies = [tank for tank in othertanks if tank.color !=
-    #             self.constants['team']]
-
-    #     # Reset my set of commands (we don't want to run old commands)
-    #     self.commands = []
-
-    #    #>= botCount
-    #     for bot in self.mytanks:
-    #         if bot.index >= botCount:
-    #             continue
-    #         elif bot.index<botCount:
-    #             self.makeMap(bot)
-
-
-    #     self.update_map()
-       
-    #     drawgridfilter.draw_grid()
-
-    #     # Send the commands to the server
-    #     results = self.bzrc.do_commands(self.commands)
-
-    # def update_map(self):
-    #     for bot in self.mytanks:
-    #         if bot.index <=botCount:
-    #             self.gridFilter.update_grid(self.bzrc.get_occgrid(1)[0],self.bzrc.get_occgrid(1)[1])
-    #             drawgridfilter.update_grid(self.gridFilter.get_grid())
-                
-
-    # def map_area(self, bot):
-    #     print "bot number:", bot.index
-    #     pointx = bot.x
-    #     pointy = bot.y
-        
-    #     # bot.pf = PotentialField(self.bzrc.get_obstacles(), self.constants['worldsize'], self.myBase)
-    #     if bot.index == 0:
-    #         goal = Misc()
-    #         goal.x = 267
-    #         goal.y = 267
-    #         goal.r = 0
-    #     elif bot.index == 1:
-    #         goal = Misc()
-    #         goal.x = -267
-    #         goal.y = -267
-    #         goal.r = 0
-    #     elif bot.index == 2:
-    #         goal = Misc()
-    #         goal.x = -267
-    #         goal.y = 0
-    #         goal.r = 0
-    #     elif bot.index == 3:
-    #         goal = Misc()
-    #         goal.x = -267
-    #         goal.y = 267
-    #         goal.r = 0
-    #     elif bot.index == 4:
-    #         goal = Misc()
-    #         goal.x = 0
-    #         goal.y = -267
-    #         goal.r = 0
-    #     elif bot.index == 5:
-    #         goal = Misc()
-    #         goal.x = 0
-    #         goal.y = 0
-    #         goal.r = 0
-    #     elif bot.index == 6:
-    #         goal = Misc()
-    #         goal.x = 0
-    #         goal.y = 267
-    #         goal.r = 0
-    #     elif bot.index == 7:
-    #         goal = Misc()
-    #         goal.x = 267
-    #         goal.y = -267
-    #         goal.r = 0
-    #     elif bot.index == 8:
-    #         goal = Misc()
-    #         goal.x = 267
-    #         goal.y = 0
-    #         goal.r = 0
-        
-
-        
-        
-    #     dist = math.sqrt((goal.x - bot.x)**2 + (goal.y - bot.y)**2)
-    #     # self.pf.set_goal(goal)
-
-
-        
-    #     # generate grid
-    #     x=np.linspace(-400, 400, 80)
-    #     myx = x
-    #     y=np.linspace(400, -400, 80)
-    #     myy = y
-    #     x, y=np.meshgrid(x, y)
-
-    #     # calculate vector field
-    #     # vx, vy = self.pf.get_vector(bot, myx, myy)
-    #     # print bot.index
-    #     # self.pfArrx.append(vx)
-    #     # self.pfArry.append(vy)
-    #     # self.distArr.append(dist)
-        
-    #     # move to point directly
-    #     desired_x = (bot.myvx[int((pointx+400)*(pointy / 80))])
-    #     desired_y = (bot.myvy[int(pointy)])
-    #     bot.x=pointx
-    #     bot.y=pointy
-    #     print pointx,"..",pointy
-    #     print "Bot:(",bot.x,",",bot.y,")   Goal:(",goal.x,",",goal.y,")    Desired:(",desired_x,",",desired_y,")    "
-    #     self.move_from_vector(bot, desired_x, desired_y, dist)
+        bot.goalx = x
+        bot.goaly = y
         
     def makeMap(self, bot):
         #print "dddddddddddddddddddddddd",self.pfArrx[bot.index]
