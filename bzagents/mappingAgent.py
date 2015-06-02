@@ -110,7 +110,7 @@ class Agent(object):
                     x,y = self.gridFilter.closest_goal(bot.x, bot.y)
                     self.botObjs[bot.index].goalx = x
                     self.botObjs[bot.index].goaly = y
-                    print bot.index, self.botObjs[bot.index].goalx, self.botObjs[bot.index].goaly
+                    print bot.index, self.botObjs[bot.index].goalx, self.botObjs[bot.index].goaly, self.gridFilter.grid[y][x]
             self.move_to_position(bot, self.botObjs[bot.index].goalx, self.botObjs[bot.index].goaly)
 
         # how often should you update the grid?

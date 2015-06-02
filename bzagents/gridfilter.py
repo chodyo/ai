@@ -90,7 +90,7 @@ class GridFilter(object):
 		while r < self.worldsize:
 			for a in range((int)(max(pos_x-r, 0)), (int)(min(pos_x+r+1, self.worldsize))):
 				for b in range((int)(max(pos_y-r, 0)), (int)(min(pos_y+r+1, self.worldsize))):
-					prob = self.grid[a][b]
+					prob = self.grid[b][a]
 					# print a-boundary, b-boundary, prob
 					if prob > CONFIDENCE and prob < 1-CONFIDENCE:
 						return a-boundary, b-boundary
