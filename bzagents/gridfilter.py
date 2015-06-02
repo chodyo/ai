@@ -87,13 +87,39 @@ class GridFilter(object):
 		pos_y += boundary
 
 		r = 0
+		a = 0
+		b = 0
 		while r < self.worldsize:
-			for a in range((int)(max(pos_x-r, 0)), (int)(min(pos_x+r+1, self.worldsize))):
+			try:
+				a = (int)(max(pos_x-r, 0))
 				for b in range((int)(max(pos_y-r, 0)), (int)(min(pos_y+r+1, self.worldsize))):
 					prob = self.grid[b][a]
 					# print a-boundary, b-boundary, prob
 					if prob > CONFIDENCE and prob < 1-CONFIDENCE:
 						return a-boundary, b-boundary
+
+				a = (int)(min(pos_x+r, self.worldsize-1))
+				for b in range((int)(max(pos_y-r, 0)), (int)(min(pos_y+r+1, self.worldsize))):
+					prob = self.grid[b][a]
+					# print a-boundary, b-boundary, prob
+					if prob > CONFIDENCE and prob < 1-CONFIDENCE:
+						return a-boundary, b-boundary
+
+				b = (int)(max(pos_y-r, 0))
+				for a in range((int)(max(pos_x-r, 0)), (int)(min(pos_y+r+1, self.worldsize))):
+					prob = self.grid[b][a]
+					# print a-boundary, b-boundary, prob
+					if prob > CONFIDENCE and prob < 1-CONFIDENCE:
+						return a-boundary, b-boundary
+
+				b = (int)(min(pos_y+r, self.worldsize-1))
+				for a in range((int)(max(pos_x-r, 0)), (int)(min(pos_y+r+1, self.worldsize))):
+					prob = self.grid[b][a]
+					# print a-boundary, b-boundary, prob
+					if prob > CONFIDENCE and prob < 1-CONFIDENCE:
+						return a-boundary, b-boundary
+			except IndexError:
+				print "INDEXERROR:",a, b
 			r += 1
 		# for when it's all done
 		return 0, -375
