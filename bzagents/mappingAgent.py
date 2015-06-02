@@ -96,7 +96,7 @@ class Agent(object):
             if bot.index >= botCount:
                 continue
 
-            self.botObjs[bot.index].last_seek += time_diff
+            self.botObjs[bot.index].last_seek += 1
 
             if self.tick_time <= 50:
                 x, y = self.map_area(bot)
@@ -105,7 +105,7 @@ class Agent(object):
             # switch from assignment phase to goal-seek phase after 15 seconds
             else: # if self.tick_time > 50:
                 # only calculate a new goal if it's been more than ~5 seconds since last time
-                if self.botObjs[bot.index].last_seek > 5:
+                if self.botObjs[bot.index].last_seek > 50:
                     self.botObjs[bot.index].last_seek = 0
                     x,y = self.gridFilter.closest_goal(bot.x, bot.y)
                     self.botObjs[bot.index].goalx = x
