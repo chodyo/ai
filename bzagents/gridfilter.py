@@ -122,7 +122,7 @@ class GridFilter(object):
 				print "INDEXERROR:",a, b
 			r += 1
 		# for when it's all done
-		return 0, -375
+		return 0, 375
 
 		# # nearby
 		# closeboundary = (int)(self.worldsize/3)
