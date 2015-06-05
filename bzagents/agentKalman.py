@@ -60,10 +60,8 @@ class Agent(object):
     # use the KALMAN FILTER to target & attack enemies
     def attack_enemies(self, bot):
 
-        myPos = tuple(bot.x, bot.y)
-        myRot = bot.angle
-        enemyPos = tuple(self.enemies[0].x, self.enemies[0].y)
-        fire = self.kalman.fire(myPos, myRot, enemyPos)
+        enemy = self.enemies[0]
+        fire = self.kalman.fire(bot, enemy)
 
         if (fire and bot.time_to_reload != 0):
             print "Shot lined up:", bot.time_to_reload, "seconds until reloaded"

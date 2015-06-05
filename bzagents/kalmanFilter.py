@@ -6,7 +6,8 @@ class KalmanFilter(object):
 		pass
 
 	# TODO: use the kalman filter to determine if my shot is lined up
-	def fire(self, pos, rot, enemy):
+	# me and enemy are objects that store the tank's attributes, like x, y, rotation, etc
+	def fire(self, me, enemy):
 		return true
 
 if __name__ == '__main__':
