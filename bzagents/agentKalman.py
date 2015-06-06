@@ -61,12 +61,20 @@ class Agent(object):
     def attack_enemies(self, bot):
 
         enemy = self.enemies[0]
+        
+        rotate = self.kalman.rotate(bot, enemy)
+        if (rotate):
+            print "Repositioning."
+        else:
+            print "Lined up."
+
         fire = self.kalman.fire(bot, enemy)
-
         if (fire and bot.time_to_reload != 0):
-            print "Shot lined up:", bot.time_to_reload, "seconds until reloaded"
+            print bot.time_to_reload, "seconds until reloaded"
+        elif (fire '''and bot.time_to_reload == 0'''):
+            print "Firing!"
 
-        command = Command(bot.index, 0, 1, fire)
+        command = Command(bot.index, 0, int(rotate), fire)
         self.commands.append(command)
 
         # '''Find the closest enemy and chase it, shooting as you go'''
