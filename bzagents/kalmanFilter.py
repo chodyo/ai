@@ -11,6 +11,8 @@ class KalmanFilter(object):
 		self.hDOTt = np.dot(H, 0.5)
 		self.SumT = np.array([100,0,0,0,0,0],[0,0.1,0,0,0,0],[0,0,0.1,0,0,0],[0,0,0,100,0,0],[0,0,0,0,0.1,0],[0,0,0,0,0,0.1])
 		self.utNow = np.array([0],[0],[0],[0],[0],[0])
+		self.x_velocity = 0
+		self.y_velocity = 0
 
 	# TODO: use the kalman filter to determine if i am facing a direction where the enemy tank will eventually travel
 	# me and enemy are objects that store the tank's attributes, like x, y, angle, etc.
@@ -27,7 +29,7 @@ class KalmanFilter(object):
 		c = 0.01
 		Zt = np.array([enemy.x],[enemy.y])
 		#initialize matrix
-		XT = np.array([enemy.x],[enemy.vx],[xAccel],[enemy.y],[enemy.vy],[yAccel])
+		XT = np.array([enemy.x],[enemy.vx],[(self.x_velocity-enemy.vx)/0.5],[enemy.y],[enemy.vy],[(self.y_velocity-enemy.vy)/0.5])
 
 		#		equation = F*sumT*F*T + SumX
 		equation = np.dot(np.dot(self.F,self.SumT),self.fDOTt) + self.SumX
