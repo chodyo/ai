@@ -3,45 +3,57 @@ import numpy as np
 class KalmanFilter(object):
 
 	def __init__(self):
-		self.F = np.array([1,deltT,(deltT*deltT)/2,0,0,0],[0,1,deltT,0,0,0],[0,-c,1,0,0,0],[0,0,0,1,deltT,(deltT*deltT)/2],[0,0,0,0,1,deltT],[0,0,0,0,-c,1])
-		self.SumX = np.array([0.1,0,0,0,0,0],[0,0.1,0,0,0,0],[0,0,100,0,0,0],[0,0,0,0.1,0,0],[0,0,0,0,0.1,0],[0,0,0,0,0,100])
+		self.deltT = 0.01
+		self.c = 0.01
+		self.F = np.array([1,self.deltT,(self.deltT*self.deltT)/2,0,0,0],[0,1,self.deltT,0,0,0],[0,-self.c,1,0,0,0],[0,0,0,1,self.deltT,(self.deltT*self.deltT)/2],[0,0,0,0,1,self.deltT],[0,0,0,0,-self.c,1])
+		self.SumX = np.array([0.1,0,0,0,0,0],[0,0.1,0,0,0,0],[0,0,5,0,0,0],[0,0,0,0.1,0,0],[0,0,0,0,0.1,0],[0,0,0,0,0,5])
 		self.H = np.array([1,0,0,0,0,0],[0,0,0,1,0,0])
 		self.SumZ = np.array([25,0],[0,25])
-		self.fDOTt = np.dot(F,0.5)
-		self.hDOTt = np.dot(H, 0.5)
 		self.SumT = np.array([100,0,0,0,0,0],[0,0.1,0,0,0,0],[0,0,0.1,0,0,0],[0,0,0,100,0,0],[0,0,0,0,0.1,0],[0,0,0,0,0,0.1])
 		self.utNow = np.array([0],[0],[0],[0],[0],[0])
-		self.x_velocity = 0
-		self.y_velocity = 0
 
-	# TODO: use the kalman filter to determine if i am facing a direction where the enemy tank will eventually travel
-	# me and enemy are objects that store the tank's attributes, like x, y, angle, etc.
+	#sets a command to rotate and returns true if me is not within .001 radians of enemy
 	def rotate(self, me, enemy):
-		return true
+		target_angle = self.find_angle(me, enemy)
+		#1 degree = .017453 radians
+		if np.absolute(me.angle - target_angle) > 0.001:
+			command = Command(me.index, 0, 1, False)
+        		me.commands.append(command)
+			return True
+		return False
 
 	# TODO: calculate the time difference between the enemy tank getting to firing location and the bullet getting to that same firing location
 	# me and enemy are objects that store the tank's attributes, like x, y, angle, etc.
 	def fire(self, me, enemy):
 		return true
 
+	def find_angle(self,me,enemy):
+		x = np.array([enemy.y-me.y])
+		y = np.array([enemy.x-me.x])
+		my_result = np.arctan2(y,x)
+		return my_result[0]
+
+	#does wicked kalman calculations
 	def calc_kalman(self, enemy, time):
-		deltT = 0.5
-		c = 0.01
 		Zt = np.array([enemy.x],[enemy.y])
-		#initialize matrix
-		XT = np.array([enemy.x],[enemy.vx],[(self.x_velocity-enemy.vx)/0.5],[enemy.y],[enemy.vy],[(self.y_velocity-enemy.vy)/0.5])
 
-		#		equation = F*sumT*F*T + SumX
-		equation = np.dot(np.dot(self.F,self.SumT),self.fDOTt) + self.SumX
+		#equation = F*sumT*F*T + SumX
+		equation = (self.F * sumT * self.F.T) + self.SumX
 
-		ktNow = np.dot(np.dot(equation,self.hDOTt),(np.dot(np.dot(self.H,equation),self.hDOTt))+self.SumZ) - 1
-		#		KtNow = equation*H*T*(H*(equation)*H*T+sumZ) -1
+		#KtNow = equation*H*T*(H*(equation)*H*T+sumZ) -1
+		ktNow = (equation * self.H.T) * (self.H * equation * self.H.T + self.SumZ) - 1
+		
+		#utNow = F*utNow +  KtNow*((zt+1) - H*F*utNow)
+		self.utNow = (F * self.utNow) + (ktNow * (Zt - self.H * self.F * self.utNow))
+		
+		#ΣtNow = (IdentityMatrix - (ktNow)*H)*(equation)
+		self.SumT = (np.identity(6) - ktNow * H) * equation
 
-		self.utNow = np.dot(self.F,self.utNow) + np.dot(ktNow,(Zt - np.dot(self.H,np.dot(self.F,self.utNow))))
-		#		utNow = F*utNow +  KtNow*((zt+1) - H*F*utNow)
+		#future stuff is just self.utNow = self.F * utNow
 
-		self.SumT = np.dot(np.identity(6) - (np.dot(ktNow,self.H)),equation)
-		#		ΣtNow = (IdentityMatrix - (ktNow)*H)*(equation)
+	#check an additional .01 seconds into the future
+	def more_kalman(self):
+		self.utNow = self.F * utNow
 
 	def main():
 		print("Main")
