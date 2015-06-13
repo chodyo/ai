@@ -1,6 +1,6 @@
 import random, string
  
-infilename = "texts/2009-Obama.txt"
+infilename = "texts/2005-Bush.txt"
 trainingdata = open(infilename).read()
 trainingdata = trainingdata.translate(string.maketrans("",""), string.punctuation).lower()
  
@@ -19,7 +19,7 @@ for word in trainingdata.split():
 context = contextconst
 for i in range(100):
     word = random.choice(model[str(context)])
-    print word
+    print(word),
     context = (context+[word])[1:]
  
 print
