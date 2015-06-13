@@ -1,8 +1,8 @@
 import random, string
  
-infilename = "texts/2005-Bush.txt"
-trainingdata = open(infilename).read()
-trainingdata = trainingdata.translate(string.maketrans("",""), string.punctuation).lower()
+infilename = "texts/bible-kjv.txt"
+trainingdata = open(infilename).read().lower()
+trainingdata = trainingdata.translate(string.maketrans("",""), string.punctuation)
  
 contextconst = [""]
  
