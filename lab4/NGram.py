@@ -45,19 +45,20 @@ class nGram:
         total_words = sum(counts.values())
         num = random.randint(1, total_words)
 
-        word_low = word_high = 0
+        a = 0
+        b = 0
         for w in counts:
-            word_low = word_high
-            word_high = word_low + counts[w]
+            a = b
+            b = a + counts[w]
 
-            if word_low < num <= word_high:
+            if a < num <= b:
                 return w
 
         return counts.keys()[0]
 
 
 if __name__ == '__main__':
-    n_gram = nGram(n=1)
+    n_gram = nGram(n=2)
     n_gram.parse_text()
 
     print
