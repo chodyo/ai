@@ -8,6 +8,9 @@ class PoS:
         self.output_length = outlen
 
         self.sentence_count = 0
+        self.token_count = 0
+
+        self.pos = {}
         self.prior = {}
         self.emission = {}
         self.transmission = {}
@@ -24,11 +27,14 @@ class PoS:
 				first = s.split()[0]
 				w,t = first.split("_")
 				# update prior value for first word in sentences
-				self.prior[t][w] = self.prior.setdefault(t, {w: 0}).setdefault(w, 0) + 1
+				self.prior[t] = self.prior.setdefault(t, 0) + 1
 				self.sentence_count += 1
 
 				for token in s.split():
 					w,t = token.split("_")
+					self.token_count += 1
+					# update part of speech count
+					self.pos[t] = self.pos.setdefault(t, 0) + 1
 					# update emission count
 					self.emission[t][w] = self.emission.setdefault(t, {w: 0}).setdefault(w, 0) + 1
 					# update transmission count
@@ -36,14 +42,10 @@ class PoS:
 					# move context forward 1
 					context = tuple((list(context) + [w])[1:])
 
-					# print "Added {0}, {1}".format(w, t)
-					# print self.emission
-					# print
-
-	def run_test(self):
+    def run_test(self):
 		context = tuple(self.default_context)
 
-		with open(self.input_file, 'r') as in_file:
+		with open(self.test_file, 'r') as in_file:
 			input_str = in_file.read()
 			# punctuation
 			# input_str = input_str.translate(string.maketrans("",""), string.punctuation).lower()
@@ -52,8 +54,41 @@ class PoS:
 				first = s.split()[0]
 				w,t = first.split("_")
 
-				m1 = self.emission[t][w]/(float)len(self.emission[t])
-				print m1
+				test = float(self.emission[t][w])/len(self.emission[t].keys())
+				test *= float(self.prior[t])/self.sentence_count
+
+				best_pos = None
+				best_prob = 0
+				prev_prob = {}
+
+				# i iterated over all keys to set ones that don't exist to zero in prev_prob
+				for pos in self.pos.keys():
+					try:
+						m1 = float(self.emission[pos][w])/len(self.emission[pos].keys())
+						m1 *= float(self.prior[pos])/self.sentence_count
+					# it's possible there won't be data for a particular part of speech
+					except KeyError:
+						m1 = 0
+
+					prev_prob[pos] = m1
+
+					if m1 > best_prob:
+						best_prob = m1
+						best_pos = pos
+
+				parts = [best_pos]
+
+				for token in s.split():
+					w,t = token.split("_")
+
+					best_pos = None
+					best_prob = 0
+
+					for pos in self.pos.keys():
+						test = 
+						test *= float(self.emission[t][w])/len(self.emission[t].keys())
+
+				
 
     def generate_output(self):
     	# the sentence to return
