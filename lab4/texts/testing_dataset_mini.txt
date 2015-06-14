@@ -1,0 +1,1 @@
+The_DT economy_NN 's_POS temperature_NN will_MD be_VB taken_VBN from_IN several_JJ vantage_NN points_NNS this_DT week_NN ,_, with_IN readings_NNS on_IN trade_NN ,_, output_NN ,_, housing_NN and_CC inflation_NN ._.

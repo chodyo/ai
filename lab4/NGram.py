@@ -1,4 +1,4 @@
-import os, random, string
+import random, string
 
 class nGram:
     def __init__(self, n=1, infile="texts/2009-Obama.txt", outlen=100):
@@ -11,12 +11,15 @@ class nGram:
         context = tuple(self.default_context)
 
         with open(self.input_file, 'r') as in_file:
-            input_str = in_file.read().translate(string.maketrans("",""), string.punctuation).lower()
+        	input_str = in_file.read()
+
+        	# punctuation
+            # input_str = input_str.translate(string.maketrans("",""), string.punctuation).lower()
 
             for w in input_str.split():
                 counts = self.model.setdefault(context, {w: 0})
                 count = counts.setdefault(w, 0)
-                counts[w] = count+1
+                counts[w] += 1
 
                 # move context forward 1
                 context = tuple((list(context) + [w])[1:])
