@@ -49,7 +49,11 @@ class PoS:
 			# input_str = input_str.translate(string.maketrans("",""), string.punctuation).lower()
 
 			for s in input_str.split("\n"):
-				pass
+				first = s.split()[0]
+				w,t = first.split("_")
+
+				m1 = self.emission[t][w]/(float)len(self.emission[t])
+				print m1
 
     def generate_output(self):
     	# the sentence to return
