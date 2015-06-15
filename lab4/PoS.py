@@ -87,7 +87,6 @@ class PoS:
 
 				# the start of the finalized PoS sentence
 				parts = [best_pos]
-				pos_prev = best_pos
 
 				# take care of the rest of the words after the first
 				for token in s.split()[1:]:
@@ -96,38 +95,36 @@ class PoS:
 					best_pos = None
 					best_prob = -1
 
-					# A represents the part of speech of the CURRENT word
+					# represents the part of speech of the CURRENT word
 					for curr in self.pos.keys():
 						mt = float(self.emission[curr][w])/self.pos[curr]
 
 						max_val = 0
 						max_pos = None
-						# B represents the part of speech of the PREVIOUS word
+						# represents the part of speech of the PREVIOUS word
 						for prev in self.pos.keys():
-							temp = float(self.transition[curr][prev])
-
-						try:
-							print token, pos
-							print "\t", mt, float(self.emission[pos][w])/self.pos[pos]
-							mt *= float(self.transition[pos][pos_prev])/self.pos[pos]
-							print "\t", mt, float(self.transition[pos][pos_prev])/self.pos[pos]
-							mt *= prev_prob[pos]
-							print "\t", mt, prev_prob[pos]
-						except KeyError:
-							mt = 0
+							try:
+								numerator = float(self.transition[curr][prev])
+								denominator = 0
+								for pos in self.pos.keys():
+									denominator += self.transition[pos][prev]
+								temp = numerator/denominator
+								temp *= prev_prob[prev]
+								if temp > max_val:
+									max_val = temp
+									max_pos = prev
+							except KeyError:
+								continue
+						mt *= max_val
 
 						# save calculated probabilities for the future
-						prev_prob[pos] = mt
+						prev_prob[curr] = mt
 
 						if mt > best_prob:
 							best_prob = mt
 							best_pos = pos
 
-					print
-
-					# record the part of speech i chose
 					parts.append(best_pos)
-					pos_prev = best_pos
 
 				print parts
 
