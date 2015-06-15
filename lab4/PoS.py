@@ -97,14 +97,14 @@ class PoS:
 					best_prob = -1
 
 					# A represents the part of speech of the CURRENT word
-					for A in self.pos.keys():
-						mt = float(self.emission[A][w])/self.pos[A]
+					for curr in self.pos.keys():
+						mt = float(self.emission[curr][w])/self.pos[curr]
 
 						max_val = 0
 						max_pos = None
 						# B represents the part of speech of the PREVIOUS word
-						for B in self.pos.keys():
-							temp = (float)
+						for prev in self.pos.keys():
+							temp = float(self.transition[curr][prev])
 
 						try:
 							print token, pos
