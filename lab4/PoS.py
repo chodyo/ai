@@ -13,11 +13,9 @@ class PoS:
         self.pos = {}
         self.prior = {}
         self.emission = {}
-        self.transmission = {}
+        self.transition = {}
 
     def parse_text(self):
-        context = tuple(self.default_context)
-
         with open(self.input_file, 'r') as in_file:
 			input_str = in_file.read()
 			# punctuation
@@ -30,17 +28,28 @@ class PoS:
 				self.prior[t] = self.prior.setdefault(t, 0) + 1
 				self.sentence_count += 1
 
-				for token in s.split():
+				self.token_count += 1
+				# update part of speech count
+				self.pos[t] = self.pos.setdefault(t, 0) + 1
+				# update emission count
+				self.emission[t][w] = self.emission.setdefault(t, {w: 0}).setdefault(w, 0) + 1
+				# update transition count
+				self.transition[t]["FIRST"] = self.transition.setdefault(t, {"FIRST": 0}).setdefault("FIRST", 0) + 1
+				# move previous part of speech forward
+				t_prev = t
+
+				for token in s.split()[1:]:
 					w,t = token.split("_")
+
 					self.token_count += 1
 					# update part of speech count
 					self.pos[t] = self.pos.setdefault(t, 0) + 1
 					# update emission count
 					self.emission[t][w] = self.emission.setdefault(t, {w: 0}).setdefault(w, 0) + 1
-					# update transmission count
-					self.transmission[context][t] = self.transmission.setdefault(context, {t: 0}).setdefault(t, 0) + 1
-					# move context forward 1
-					context = tuple((list(context) + [w])[1:])
+					# update transition count
+					self.transition[t][t_prev] = self.transition.setdefault(t, {t_prev: 0}).setdefault(t_prev, 0) + 1
+					# move previous part of speech forward
+					t_prev = t
 
     def run_test(self):
 		context = tuple(self.default_context)
@@ -50,12 +59,11 @@ class PoS:
 			# punctuation
 			# input_str = input_str.translate(string.maketrans("",""), string.punctuation).lower()
 
+			# iterate over every test sentence
 			for s in input_str.split("\n"):
+				# take care of the first word separately
 				first = s.split()[0]
 				w,t = first.split("_")
-
-				test = float(self.emission[t][w])/len(self.emission[t].keys())
-				test *= float(self.prior[t])/self.sentence_count
 
 				best_pos = None
 				best_prob = 0
@@ -64,31 +72,56 @@ class PoS:
 				# i iterated over all keys to set ones that don't exist to zero in prev_prob
 				for pos in self.pos.keys():
 					try:
-						m1 = float(self.emission[pos][w])/len(self.emission[pos].keys())
+						m1 = float(self.emission[pos][w])/self.pos[t]
 						m1 *= float(self.prior[pos])/self.sentence_count
 					# it's possible there won't be data for a particular part of speech
 					except KeyError:
 						m1 = 0
 
+					# save calculated probabilities for m_n+1
 					prev_prob[pos] = m1
 
 					if m1 > best_prob:
 						best_prob = m1
 						best_pos = pos
 
+				# the start of the finalized PoS sentence
 				parts = [best_pos]
+				pos_prev = best_pos
 
-				for token in s.split():
+				# take care of the rest of the words after the first
+				for token in s.split()[1:]:
 					w,t = token.split("_")
 
 					best_pos = None
-					best_prob = 0
+					best_prob = -1
 
 					for pos in self.pos.keys():
-						test = 
-						test *= float(self.emission[t][w])/len(self.emission[t].keys())
+						try:
+							print token, pos
+							mt = float(self.emission[pos][w])/self.pos[pos]
+							print "\t", mt, float(self.emission[pos][w])/self.pos[pos]
+							mt *= float(self.transition[pos][pos_prev])/self.pos[pos]
+							print "\t", mt, float(self.transition[pos][pos_prev])/self.pos[pos]
+							mt *= prev_prob[pos]
+							print "\t", mt, prev_prob[pos]
+						except KeyError:
+							mt = 0
 
-				
+						# save calculated probabilities for the future
+						prev_prob[pos] = mt
+
+						if mt > best_prob:
+							best_prob = mt
+							best_pos = pos
+
+					print
+
+					# record the part of speech i chose
+					parts.append(best_pos)
+					pos_prev = best_pos
+
+				print parts
 
     def generate_output(self):
     	# the sentence to return
@@ -127,12 +160,9 @@ class PoS:
 
 
 if __name__ == '__main__':
-    pos = PoS(n=1)
-    pos.parse_text()
-    pos.run_test()
 
-    # print
-    # for w in pos.generate_output():
-    # 	print w,
-    # print
-    # print
+	pos = PoS(n=1)
+
+	pos.parse_text()
+
+	pos.run_test()
