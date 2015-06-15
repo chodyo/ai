@@ -17,11 +17,12 @@ class ValueIteration:
 
 
 		# discount factor
-		self.gamma = 1
+		self.gamma = 0.01
 
 		self.P = {}
 
-		self.P[("s1", "n")] = [("s1", 0.5), ("s2", 0.5)]
+		# current state, action => [(future state, probability), ...]
+		self.P[("s1", "n")] = [("s1", 0.9), ("s2", 0.1)]
 		self.P[("s1", "p")] = [("s3", 1)]
 
 		self.P[("s2", "n")] = [("s1", 0.5), ("s2", 0.5)]
