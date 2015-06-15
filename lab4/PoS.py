@@ -1,7 +1,7 @@
 import random, string
 
 class PoS:
-    def __init__(self, n=1, infile="texts/training_dataset_mini.txt", testfile="texts/training_dataset_sentence.txt", outlen=100):
+    def __init__(self, n=1, infile="texts/training_dataset.txt", testfile="texts/training_dataset_sentence.txt", outlen=100):
         self.input_file = infile
         self.test_file = testfile
         self.default_context = [""] * n
@@ -96,10 +96,18 @@ class PoS:
 					best_pos = None
 					best_prob = -1
 
-					for pos in self.pos.keys():
+					# A represents the part of speech of the CURRENT word
+					for A in self.pos.keys():
+						mt = float(self.emission[A][w])/self.pos[A]
+
+						max_val = 0
+						max_pos = None
+						# B represents the part of speech of the PREVIOUS word
+						for B in self.pos.keys():
+							temp = (float)
+
 						try:
 							print token, pos
-							mt = float(self.emission[pos][w])/self.pos[pos]
 							print "\t", mt, float(self.emission[pos][w])/self.pos[pos]
 							mt *= float(self.transition[pos][pos_prev])/self.pos[pos]
 							print "\t", mt, float(self.transition[pos][pos_prev])/self.pos[pos]
