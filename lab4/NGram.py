@@ -27,10 +27,14 @@ class nGram:
     	s = []
     	# pick a random word as the starting point
         # context = random.sample(self.model.keys(), 1)[0]
+
         # pick the first word in the document as the starting point
         # context = tuple(self.default_context)
+
+        # pick a context at random, but if it's not the start of a sentence, try again
         context = random.sample(self.model.keys(), 1)[0]
-        print context
+        while context[-1] is not "." and context[-1] is not "":
+            context = random.sample(self.model.keys(), 1)[0]
 
         for i in range(self.output_length):
             w = self.next_word(context)
