@@ -11,11 +11,9 @@ class nGram:
         context = tuple(self.default_context)
 
         with open(self.input_file, 'r') as in_file:
-        	input_str = in_file.read()
-
-        	# punctuation
+            input_str = in_file.read()
+            # punctuation
             # input_str = input_str.translate(string.maketrans("",""), string.punctuation).lower()
-
             for w in input_str.split():
                 counts = self.model.setdefault(context, {w: 0})
                 count = counts.setdefault(w, 0)
@@ -28,7 +26,9 @@ class nGram:
     	# the sentence to return
     	s = []
     	# pick a random word as the starting point
-        context = random.sample(self.model.keys(), 1)[0]
+        # context = random.sample(self.model.keys(), 1)[0]
+        # pick the first word in the document as the starting point
+        context = tuple(self.default_context)
 
         for i in range(self.output_length):
             w = self.next_word(context)
