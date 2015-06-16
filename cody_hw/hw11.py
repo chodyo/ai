@@ -17,7 +17,7 @@ class ValueIteration:
 
 
 		# discount factor
-		self.gamma = 0.01
+		self.gamma = 0.1
 
 		self.P = {}
 
@@ -25,13 +25,13 @@ class ValueIteration:
 		self.P[("s1", "n")] = [("s1", 0.9), ("s2", 0.1)]
 		self.P[("s1", "p")] = [("s3", 1)]
 
-		self.P[("s2", "n")] = [("s1", 0.5), ("s2", 0.5)]
+		self.P[("s2", "n")] = [("s1", 0.9), ("s2", 0.1)]
 		self.P[("s2", "p")] = [("s4", 1)]
 
 		self.P[("s3", "n")] = [("s1", 1)]
-		self.P[("s3", "p")] = [("s3", 0.5), ("s4", 0.5)]
+		self.P[("s3", "p")] = [("s3", 0.9), ("s4", 0.1)]
 
-		self.P[("s4", "n")] = [("s2", 0.5), ("s3", 0.5)]
+		self.P[("s4", "n")] = [("s2", 0.9), ("s3", 0.1)]
 		self.P[("s4", "p")] = [("s4", 1)]
 
 		# future reward
@@ -68,4 +68,4 @@ if __name__ == '__main__':
 	v = ValueIteration()
 	for i in range(0, 1000):
 		v.iterate()
-	print v.U
+		print i, v.U
