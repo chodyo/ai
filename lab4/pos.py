@@ -114,3 +114,8 @@ if __name__ == '__main__':
     p.test()
 
     print "correctness:", p.correct, "/", p.correct+p.incorrect
+
+    print
+    print "Transmission:", p.transmission
+    print
+    print "Emission:", p.emission
