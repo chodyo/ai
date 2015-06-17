@@ -3,7 +3,7 @@ from math import log
 from pprint import pprint
 
 train_file = "texts/training_dataset.txt"
-test_file = "texts/testing_dataset_mini.txt"
+test_file = "texts/training_dataset.txt"
 
 first = "FIRST"
 defaultprob = 1.0/999999999999.0
@@ -83,7 +83,7 @@ class ViterbiLabeler:
                         vit[tag] = best_prob
 
                 # record my skillz
-                print "%s=%s (%s)\t" % (w, best_pos, pos),
+                # print "%s=%s (%s)\t" % (w, best_pos, pos),
                 if pos == best_pos:
                     self.correct += 1
                 else:
@@ -94,7 +94,7 @@ class ViterbiLabeler:
                 confusion_count = confusion_counts.setdefault(best_pos, 0)
                 self.confusion_matrix[pos][best_pos] = confusion_count + 1
 
-            print
+            # print
             pprint(self.confusion_matrix)
 
     def update_percents(self):
@@ -115,7 +115,7 @@ if __name__ == '__main__':
 
     print "correctness:", p.correct, "/", p.correct+p.incorrect
 
-    print
-    print "Transmission:", p.transmission
-    print
-    print "Emission:", p.emission
+    # print
+    # pprint(p.transition)
+    # print
+    # pprint(p.emission)
