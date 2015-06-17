@@ -65,13 +65,46 @@ class nGram:
 
         return counts.keys()[0]
 
+    def get_prior_prob(self):
+        context = ('',)
+        counts = self.model[context]
+        print "Context:", context
+        print "Following words:", counts
+
+        total = 0
+        for w in counts:
+            total += 1
+
+        context = ('.',)
+        counts = self.model[context]
+        print "Context:", context
+        print "Following words:", counts
+
+        total = 0
+        for w in counts:
+            total += 1
+        print "Total choices:", total
+
+    def get_transition_prob(self):
+        context = ('is',)
+        counts = self.model[context]
+        print "Context:", context
+        print "Following words:", counts
+
+        total = 0
+        for w in counts:
+            total += counts[w]
+        print "Total occurrences:", total
+
 
 if __name__ == '__main__':
-    n_gram = nGram(n=2)
+    n_gram = nGram(n=1)
     n_gram.parse_text()
 
-    print
-    for w in n_gram.generate_output():
-    	print w,
-    print
-    print
+    # print
+    # for w in n_gram.generate_output():
+    # 	print w,
+    # print
+    # print
+
+    n_gram.get_prior_prob()

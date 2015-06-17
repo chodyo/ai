@@ -3,7 +3,7 @@ from math import log
 from pprint import pprint
 
 train_file = "texts/training_dataset.txt"
-test_file = "texts/testing_dataset.txt"
+test_file = "texts/testing_dataset_mini.txt"
 
 first = "FIRST"
 defaultprob = 1.0/999999999999.0
@@ -56,10 +56,10 @@ class ViterbiLabeler:
         pos_counts[first] += 1
 
     def test(self):
-        v = {}
+        vit = {}
 
         for pos_tag in self.percent:
-            v[pos_tag] = log(self.percent[pos_tag])
+            vit[pos_tag] = log(self.percent[pos_tag])
 
         with open(self.test_file, 'r') as test_file:
             input_str = test_file.read()
@@ -70,21 +70,20 @@ class ViterbiLabeler:
                 best_pos = None
                 best_prob = -sys.maxsize - 2
                 for tag in self.emission:
-                    emit_term = log(float(self.emission[tag].setdefault(w, defaultprob)) /
-                                    float(self.emission[tag][first]))
+                    emit_term = log(float(self.emission[tag].setdefault(w, defaultprob)) / float(self.emission[tag][first]))
 
                     for prev in self.transition:
                         prev_tag = prev[-1]
 
-                        v_term = v.setdefault(prev_tag, log(defaultprob))
-                        trans_term = log(float(self.transition[prev].setdefault(tag, defaultprob)) /
-                                         float(self.transition[prev][first]))
+                        v_term = vit.setdefault(prev_tag, log(defaultprob))
+                        trans_term = log(float(self.transition[prev].setdefault(tag, defaultprob)) / float(self.transition[prev][first]))
 
                         best_prob, best_pos = max((best_prob, best_pos), (v_term + trans_term + emit_term, tag))
 
-                        v[tag] = best_prob
+                        vit[tag] = best_prob
 
                 # record my skillz
+                print "%s=%s (%s)\t" % (w, best_pos, pos),
                 if pos == best_pos:
                     self.correct += 1
                 else:
@@ -95,6 +94,7 @@ class ViterbiLabeler:
                 confusion_count = confusion_counts.setdefault(best_pos, 0)
                 self.confusion_matrix[pos][best_pos] = confusion_count + 1
 
+            print
             pprint(self.confusion_matrix)
 
     def update_percents(self):
